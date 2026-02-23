@@ -826,7 +826,6 @@ if enforcer.Enforce(user.ID, "completions", "request") {
 
 ### 6.3 API Authentication
 
-
 **JWT Tokens**:
 
 ```json
@@ -925,7 +924,6 @@ ssl_prefer_server_ciphers off;
 
 **Disk Encryption**:
 
-
 - **Linux**: LUKS (dm-crypt) for on-prem deployments
 - **Cloud**: Default disk encryption (AWS EBS, Azure Disks, GCP Persistent Disks)
 
@@ -942,14 +940,12 @@ Master Key (Hardware Security Module - HSM)
 
 **Envelope Encryption**:
 
-
 1. Data encrypted with DEK (fast, symmetric AES-256)
 2. DEK encrypted with Master Key (asymmetric, stored in HSM)
 3. Encrypted DEK stored with data
 4. Master Key never leaves HSM
 
 **Key Rotation**:
-
 
 - DEKs rotated every 90 days (automated)
 - Master Key rotated every 365 days (manual, audited)
@@ -962,7 +958,6 @@ Master Key (Hardware Security Module - HSM)
 
 **User Actions**:
 
-
 - Login/logout (success and failures)
 - Privacy mode changes
 - Data export/deletion requests
@@ -970,7 +965,6 @@ Master Key (Hardware Security Module - HSM)
 - Repository added/removed
 
 **System Actions**:
-
 
 - Model predictions served
 - Tool executions (what command, result)
@@ -1019,18 +1013,15 @@ VALUES
 
 **Write-Only Access**:
 
-
 - Application can INSERT, cannot UPDATE or DELETE
 - Only DBAs with elevated privileges can delete (after retention period)
 
 **Log Shipping**:
 
-
 - Stream logs to immutable storage (S3 Glacier, AWS CloudWatch Logs, Azure Monitor)
 - Enables forensic analysis even if attacker compromises database
 
 **Verification** (Optional, for high-security):
-
 
 - Cryptographically sign each log entry
 - Chain entries (each entry includes hash of previous entry)
@@ -1048,14 +1039,12 @@ VALUES
 
 **Who Can Access**:
 
-
 - **Users**: Their own logs via privacy dashboard
 - **Admins**: All logs for their organization
 - **Security Team**: All logs for incident response
 - **Regulators**: Upon legal request, with proper authorization
 
 **Redaction**:
-
 
 - Sensitive fields (e.g., code contents) redacted in UI
 - Full logs available only to security team and auditors
