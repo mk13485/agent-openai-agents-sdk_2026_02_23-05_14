@@ -198,10 +198,10 @@ verify_setup.py               # Verification script
 
 ## 🌐 URLs (when running locally)
 
-- **Chat UI**: http://localhost:3000
-- **Agent API**: http://localhost:8000/invocations
-- **API Docs**: http://localhost:8000/docs
-- **Health Check**: http://localhost:8000/health
+- **Chat UI**: <http://localhost:3000>
+- **Agent API**: <http://localhost:8000/invocations>
+- **API Docs**: <http://localhost:8000/docs>
+- **Health Check**: <http://localhost:8000/health>
 
 ## 💡 Pro Tips
 

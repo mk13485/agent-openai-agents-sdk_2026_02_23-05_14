@@ -3,12 +3,14 @@
 ## 🚀 Automated Setup (Recommended)
 
 ### Option 1: Using the official quickstart
+
 ```bash
 cd agent-openai-agents-sdk_2026_02_23-05_14/agent-openai-agents-sdk
 uv run quickstart
 ```
 
 ### Option 2: Using the setup script
+
 ```bash
 cd agent-openai-agents-sdk_2026_02_23-05_14/agent-openai-agents-sdk
 chmod +x setup.sh
@@ -16,6 +18,7 @@ chmod +x setup.sh
 ```
 
 Both options will:
+
 - ✓ Check prerequisites (uv, nvm, Node.js, Databricks CLI)
 - ✓ Authenticate with Databricks
 - ✓ Create an MLflow experiment for tracing
@@ -29,16 +32,19 @@ If you prefer to set up manually or if automated setup fails:
 ### 1. Install Prerequisites
 
 **Install uv (Python package manager):**
+
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
 **Install Databricks CLI:**
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
 ```
 
 **Install Node.js 20 (via nvm):**
+
 ```bash
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
 nvm install 20
@@ -47,14 +53,17 @@ nvm use 20
 
 ### 2. Authenticate with Databricks
 
-**Option A: OAuth (Recommended)**
+#### Option A: OAuth (Recommended)
+
 ```bash
 databricks auth login
 ```
 
-**Option B: Personal Access Token**
+#### Option B: Personal Access Token
+
 1. Generate a PAT in Databricks workspace: Settings → Developer → Access Tokens
 2. Update `.env` file:
+
    ```bash
    DATABRICKS_HOST=https://your-workspace.cloud.databricks.com
    DATABRICKS_TOKEN=dapi_your_token_here
@@ -75,6 +84,7 @@ Copy the experiment ID from the output.
 ### 4. Configure Environment Variables
 
 Update the `.env` file with your experiment ID:
+
 ```bash
 MLFLOW_EXPERIMENT_ID=your_experiment_id_here
 ```
@@ -88,27 +98,32 @@ uv sync
 ## ▶️ Running the Agent
 
 ### Start the Agent Server + Chat UI
+
 ```bash
 uv run start-app
 ```
 
 This starts:
+
 - **Agent Server** at `http://localhost:8000/invocations`
 - **Chat UI** at `http://localhost:3000`
 
 ### Server Options
 
 **Start with hot-reload (for development):**
+
 ```bash
 uv run start-server --reload
 ```
 
 **Change port:**
+
 ```bash
 uv run start-server --port 8001
 ```
 
 **Multiple workers:**
+
 ```bash
 uv run start-server --workers 4
 ```
@@ -116,11 +131,13 @@ uv run start-server --workers 4
 ## 🧪 Testing the Agent
 
 ### Via Chat UI
+
 Open `http://localhost:3000` in your browser
 
 ### Via REST API
 
 **Streaming request:**
+
 ```bash
 curl -X POST http://localhost:8000/invocations \
   -H "Content-Type: application/json" \
@@ -131,6 +148,7 @@ curl -X POST http://localhost:8000/invocations \
 ```
 
 **Non-streaming request:**
+
 ```bash
 curl -X POST http://localhost:8000/invocations \
   -H "Content-Type: application/json" \
@@ -144,6 +162,7 @@ curl -X POST http://localhost:8000/invocations \
 Your agent interactions are automatically traced to MLflow.
 
 **View in Databricks:**
+
 1. Go to your Databricks workspace
 2. Navigate to: Machine Learning → Experiments
 3. Find: `/Users/<your-username>/agents-on-apps`
@@ -172,19 +191,23 @@ uv add package-name
 ## 🚨 Troubleshooting
 
 ### "Authentication failed"
+
 - Run `databricks auth login` again
 - Check that your workspace URL is correct
 - Ensure you have network access to Databricks
 
 ### "Cannot find experiment"
+
 - Verify `MLFLOW_EXPERIMENT_ID` in `.env` is set correctly
 - Check experiment exists: `databricks experiments list`
 
 ### "Module not found"
+
 - Run `uv sync` to install dependencies
 - Ensure you're in the correct directory
 
 ### "Port already in use"
+
 - Stop any existing servers
 - Use a different port: `uv run start-server --port 8001`
 
