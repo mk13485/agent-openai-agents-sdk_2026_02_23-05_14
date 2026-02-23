@@ -1,4 +1,5 @@
 # Security & Privacy Controls
+
 **Copilot-Style Coding Agent - EU/GDPR Compliance**
 **Date: February 23, 2026**
 
@@ -34,12 +35,14 @@
 Users can select their preferred privacy level in IDE settings:
 
 #### Local-Only Mode
+
 - **Description**: All processing happens on user's machine, no data sent to server
 - **Features Available**: Basic completions using local model (if hardware permits)
 - **Features Unavailable**: Repo-wide context, agentic tasks, model improvements
 - **Use Case**: Highly sensitive codebases, legal/compliance requirements
 
 #### Partial Mode (Default)
+
 - **Description**: Send only active file window and cursor position
 - **Data Transmitted**:
   - Current file name and language
@@ -50,6 +53,7 @@ Users can select their preferred privacy level in IDE settings:
 - **Use Case**: Balance between privacy and functionality
 
 #### Full Mode (Opt-In)
+
 - **Description**: Send full repo context for best suggestions
 - **Data Transmitted**:
   - All data from Partial mode
@@ -64,7 +68,7 @@ Users can select their preferred privacy level in IDE settings:
 
 Users can access a privacy dashboard to view and manage their data:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │  Your Privacy Dashboard                                 │
 │                                                          │
@@ -95,12 +99,14 @@ Users can access a privacy dashboard to view and manage their data:
 **Requirement**: All personal data of EU users must be stored and processed within the EU.
 
 **Implementation**:
+
 - **Primary Region**: AWS eu-central-1 (Frankfurt) or Azure West Europe (Netherlands)
 - **Backup Region**: AWS eu-west-1 (Ireland) or Azure North Europe (Finland)
 - **No Cross-Border Transfers**: Zero data transfers to US or other non-EU regions
 - **Cloud Provider Commitments**: Use providers with GDPR-compliant data processing agreements (DPAs)
 
 **Infrastructure Tagging**:
+
 ```yaml
 # Terraform/CloudFormation
 Tags:
@@ -110,6 +116,7 @@ Tags:
 ```
 
 **Verification**:
+
 - Quarterly audits of data locations
 - Automated checks for accidental cross-region replication
 - Alert if any service attempts to route data outside EU
@@ -123,6 +130,7 @@ Under GDPR Article 6, we process data based on:
 3. **Legitimate Interest** (Article 6(1)(f)): Improve service, prevent fraud (balanced against user rights)
 
 **Consent Management**:
+
 ```typescript
 interface ConsentRecord {
   userId: string;
@@ -137,9 +145,11 @@ interface ConsentRecord {
 ### 2.3 User Rights Implementation
 
 #### Right of Access (Article 15)
+
 Users can request all data held about them.
 
 **Implementation**:
+
 ```bash
 # API endpoint
 GET /api/v1/gdpr/data-access?userId={userId}
@@ -154,9 +164,11 @@ GET /api/v1/gdpr/data-access?userId={userId}
 ```
 
 #### Right to Erasure (Article 17)
+
 Users can delete all their data.
 
 **Implementation**:
+
 ```sql
 -- Delete from all tables
 DELETE FROM sessions WHERE user_id = $1;
@@ -174,9 +186,11 @@ DELETE FROM training_data WHERE user_id = $1;
 **Timeline**: Complete deletion within 30 days (GDPR requirement)
 
 #### Right to Data Portability (Article 20)
+
 Users can export data in machine-readable format.
 
 **Implementation**:
+
 ```bash
 # Export as JSON
 GET /api/v1/gdpr/data-export?userId={userId}&format=json
@@ -186,9 +200,11 @@ GET /api/v1/gdpr/data-export?userId={userId}&format=csv
 ```
 
 #### Right to Object (Article 21)
+
 Users can opt out of training data usage, even if previously consented.
 
 **Implementation**:
+
 - Toggle in privacy dashboard
 - Immediately stop using their data for training
 - Option to delete previously collected training samples
@@ -205,6 +221,7 @@ Users can opt out of training data usage, even if previously consented.
 | User account           | Until deletion   | Contractual necessity          |
 
 **Automated Cleanup**:
+
 ```python
 # Cron job runs daily
 def cleanup_expired_data():
@@ -221,6 +238,7 @@ def cleanup_expired_data():
 ### 2.5 Data Processing Agreement (DPA)
 
 **Required Elements** (for enterprise customers):
+
 - Detailed description of processing activities
 - Types of personal data processed
 - Categories of data subjects (developers, admins)
@@ -236,11 +254,13 @@ def cleanup_expired_data():
 **Next Review**: August 2026 (every 6 months)
 
 **Key Findings**:
+
 - **High Risk**: Processing of intellectual property (code) → Mitigated by privacy modes and encryption
 - **Medium Risk**: Training on user data → Mitigated by explicit opt-in and anonymization
 - **Low Risk**: Telemetry collection → Mitigated by aggregation and short retention
 
 **Actions**:
+
 - ✓ Implement three-tier privacy modes
 - ✓ Deploy EU-only infrastructure
 - ✓ Add user data export/deletion features
@@ -259,7 +279,7 @@ def cleanup_expired_data():
 
 ### 3.2 Network Segmentation
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │  PUBLIC INTERNET                                        │
 └─────────────────┬───────────────────────────────────────┘
@@ -295,6 +315,7 @@ def cleanup_expired_data():
 ```
 
 **Firewall Rules**:
+
 - Internet → WAF: HTTPS (443)
 - WAF → Load Balancer: HTTPS (443)
 - Load Balancer → App Server: HTTP (8080), internal network only
@@ -306,6 +327,7 @@ def cleanup_expired_data():
 ### 3.3 Container Security
 
 #### Sandbox Hardening
+
 ```dockerfile
 FROM python:3.11-slim AS base
 
@@ -334,6 +356,7 @@ WORKDIR /workspace
 ```
 
 #### Seccomp Profile (Restrict Syscalls)
+
 ```json
 {
   "defaultAction": "SCMP_ACT_ERRNO",
@@ -353,12 +376,14 @@ WORKDIR /workspace
 **Never Hardcode Secrets**: All secrets stored in secret management system.
 
 **Options**:
+
 1. **AWS Secrets Manager** (for AWS deployments)
 2. **Azure Key Vault** (for Azure deployments)
 3. **HashiCorp Vault** (cloud-agnostic)
 4. **Kubernetes Secrets** + **Sealed Secrets** (for K8s)
 
 **Example** (Kubernetes with External Secrets Operator):
+
 ```yaml
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
@@ -384,6 +409,7 @@ spec:
 ```
 
 **Secret Rotation**:
+
 - **Database passwords**: Rotate every 90 days (automated)
 - **API keys**: Rotate every 180 days or on suspected compromise
 - **JWT signing keys**: Rotate every 90 days, maintain 2 active keys (old + new) during transition
@@ -391,6 +417,7 @@ spec:
 ### 3.5 Vulnerability Management
 
 **Container Scanning**:
+
 ```bash
 # Scan images for vulnerabilities (Trivy)
 trivy image --severity HIGH,CRITICAL app-server:v1.0.0
@@ -403,6 +430,7 @@ fi
 ```
 
 **Dependency Scanning**:
+
 ```bash
 # Python (pip-audit)
 pip-audit --desc
@@ -415,6 +443,7 @@ govulncheck ./...
 ```
 
 **Automated Updates**:
+
 - Dependabot (GitHub): Auto-create PRs for dependency updates
 - Renovate Bot: More configurable alternative
 - Weekly review and merge of security patches
@@ -422,12 +451,14 @@ govulncheck ./...
 ### 3.6 DDoS Protection
 
 **Layers**:
+
 1. **Cloud Provider**: AWS Shield, Cloudflare
 2. **Rate Limiting**: Per-IP, per-user, per-org limits
 3. **WAF Rules**: Block malicious patterns, known bad IPs
 4. **Admission Control**: Reject requests when system overloaded
 
 **Rate Limits** (implemented in API Gateway):
+
 ```go
 // Per-IP rate limit (anonymous users)
 rateLimitPerIP := 100  // requests per minute
@@ -450,6 +481,7 @@ Secrets (API keys, passwords, tokens) must never be sent to the model or stored 
 ### 4.2 Detection Patterns
 
 **Regex Patterns**:
+
 ```python
 SECRET_PATTERNS = {
     'api_key': r'(?i)(api[_-]?key|apikey)\s*[=:]\s*["\']([a-zA-Z0-9_\-]{20,})["\']',
@@ -464,17 +496,20 @@ SECRET_PATTERNS = {
 ```
 
 **Machine Learning Detection**:
+
 - Train classifier on labeled secrets dataset
 - Detects non-standard secret formats
 - Higher accuracy but more compute-intensive
 
 **Combined Approach**:
+
 1. Fast regex scan (CPU-cheap, 95% recall)
 2. ML classifier for flagged lines (high precision)
 
 ### 4.3 Redaction Process
 
 **Client-Side** (IDE Plugin):
+
 ```typescript
 function redactSecrets(code: string): {redacted: string, detected: string[]} {
   let redacted = code;
@@ -500,6 +535,7 @@ sendToServer(redacted);
 ```
 
 **Server-Side** (Double-Check):
+
 ```python
 def redact_secrets_server(code: str) -> tuple[str, list[str]]:
     """Server-side redaction as failsafe."""
@@ -524,7 +560,8 @@ def redact_secrets_server(code: str) -> tuple[str, list[str]]:
 ### 4.4 User Notification
 
 **Visual Indicator** (IDE):
-```
+
+```text
 ┌────────────────────────────────────────────────┐
 │  ⚠️  Secret Detected                          │
 │                                                │
@@ -542,6 +579,7 @@ def redact_secrets_server(code: str) -> tuple[str, list[str]]:
 ### 4.5 Training Data Filtering
 
 Before using accepted suggestions for training:
+
 ```python
 def is_safe_for_training(completion: str) -> bool:
     # Check for secrets
@@ -574,6 +612,7 @@ Suggested code may unintentionally match copyrighted code. Detect and notify use
 ### 5.2 Detection Methods
 
 #### Exact Match (Fast)
+
 - Hash suggested code (e.g., SHA-256)
 - Check against database of known code snippets with licenses
 - Database built from public code corpora (GitHub, GitLab, Bitbucket)
@@ -597,6 +636,7 @@ def check_exact_match(code: str) -> Optional[Match]:
 ```
 
 #### Fuzzy Match (Slower, More Accurate)
+
 - Use Locality-Sensitive Hashing (LSH) or MinHash
 - Detect similar (not just identical) code
 - Higher recall, lower precision
@@ -640,14 +680,16 @@ def check_fuzzy_match(code: str, lsh: MinHashLSH) -> list[Match]:
 ### 5.3 User Notification
 
 **Low Confidence Match** (0.6-0.8 similarity):
-```
+
+```text
 ℹ️  This suggestion may be similar to existing code.
    License: MIT | Source: github.com/example/repo
    [View Source] [Dismiss]
 ```
 
 **High Confidence Match** (>0.8 similarity):
-```
+
+```text
 ⚠️  Warning: This code closely matches existing copyrighted code.
    License: GPL-3.0 (Viral License)
    Source: github.com/example/gpl-project
@@ -660,6 +702,7 @@ def check_fuzzy_match(code: str, lsh: MinHashLSH) -> list[Match]:
 ### 5.4 License Database
 
 **Schema**:
+
 ```sql
 CREATE TABLE license_matches (
     id BIGSERIAL PRIMARY KEY,
@@ -679,6 +722,7 @@ CREATE INDEX idx_license ON license_matches(license);
 ```
 
 **Data Sources**:
+
 1. GitHub public repos (via BigQuery or GitHub Archive)
 2. Open-source package registries (PyPI, NPM, Maven Central)
 3. Stack Overflow (CC BY-SA license)
@@ -688,18 +732,22 @@ CREATE INDEX idx_license ON license_matches(license);
 ### 5.5 Safe Licenses vs Viral Licenses
 
 **Safe** (permissive):
+
 - MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause
 - User can use code without open-sourcing their project
 
 **Viral** (copyleft):
+
 - GPL-2.0, GPL-3.0, AGPL-3.0
 - Requires derivative works to be open-sourced under same license
 
 **Restricted**:
+
 - CC BY-NC (non-commercial), proprietary licenses
 - May require payment or special permissions
 
 **User Setting**:
+
 ```yaml
 license_policy:
   allow: [MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause]
@@ -714,22 +762,26 @@ license_policy:
 ### 6.1 Authentication Methods
 
 #### Individual Developers
+
 - **OAuth 2.0**: GitHub, GitLab, Bitbucket login
 - **Email/Password**: With 2FA (TOTP or WebAuthn)
 
 #### Enterprise Teams
+
 - **SAML SSO**: Integrate with Okta, Azure AD, Google Workspace
 - **LDAP**: For on-prem Active Directory
 
 ### 6.2 Authorization (RBAC)
 
 **Roles**:
+
 - **Developer**: Use all features, access their own data
 - **Team Lead**: View team metrics, manage team settings
 - **Admin**: Manage org settings, add/remove users, view audit logs
 - **Billing**: Manage subscriptions, view invoices
 
 **Permissions**:
+
 ```yaml
 roles:
   developer:
@@ -758,6 +810,7 @@ roles:
 ```
 
 **Implementation** (Policy-as-Code with Casbin):
+
 ```go
 import "github.com/casbin/casbin/v2"
 
@@ -773,7 +826,9 @@ if enforcer.Enforce(user.ID, "completions", "request") {
 
 ### 6.3 API Authentication
 
+
 **JWT Tokens**:
+
 ```json
 {
   "sub": "user_123",
@@ -784,17 +839,21 @@ if enforcer.Enforce(user.ID, "completions", "request") {
 }
 ```
 
-**Signed with RS256** (asymmetric cryptography):
 - Private key signs tokens (kept secure on auth server)
 - Public key verifies tokens (distributed to all services)
 
 **Token Refresh**:
+
 - Short-lived access tokens (24 hours)
 - Long-lived refresh tokens (30 days, stored securely)
 
 ### 6.4 Multi-Tenancy Isolation
 
 **Database-Level**:
+cy Isolation
+
+**Database-Level**:
+
 ```sql
 -- Every table has org_id
 CREATE TABLE completions (
@@ -805,6 +864,7 @@ CREATE TABLE completions (
 );
 
 -- Row-Level Security (RLS)
+
 ALTER TABLE completions ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY tenant_isolation ON completions
@@ -812,6 +872,7 @@ CREATE POLICY tenant_isolation ON completions
 ```
 
 **Application-Level**:
+
 ```python
 # Every query automatically filters by org_id
 class CompletionRepository:
@@ -829,16 +890,19 @@ class CompletionRepository:
 ### 7.1 Encryption in Transit
 
 **TLS 1.3** for all network communication:
+
 - IDE ↔ App Server: HTTPS/WSS with TLS 1.3
 - App Server ↔ Model Serving: gRPC with TLS
 - App Server ↔ Databases: PostgreSQL SSL mode `require`, Redis TLS
 
 **Certificate Management**:
+
 - **Let's Encrypt**: Free, automated certificate issuance and renewal
 - **AWS Certificate Manager** (ACM): For AWS deployments
 - **Cert-Manager** (Kubernetes): Automates certificate lifecycle
 
 **Cipher Suites** (strong only):
+
 ```nginx
 ssl_protocols TLSv1.3;
 ssl_ciphers 'TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256';
@@ -848,23 +912,28 @@ ssl_prefer_server_ciphers off;
 ### 7.2 Encryption at Rest
 
 **Database Encryption**:
+
 - **PostgreSQL**: Transparent Data Encryption (TDE) or AWS RDS encryption
 - **Redis**: AOF/RDB encryption (Redis 6+ with `aclfile`)
 - **Elasticsearch**: Encryption at rest via AWS, Azure, or GCP managed services
 
 **Object Storage**:
+
 - **S3**: Server-Side Encryption (SSE-KMS) with customer-managed keys
 - **Azure Blob**: Azure Storage Service Encryption with Key Vault
 - **MinIO**: Server-side encryption with KMS
 
 **Disk Encryption**:
+
+
 - **Linux**: LUKS (dm-crypt) for on-prem deployments
 - **Cloud**: Default disk encryption (AWS EBS, Azure Disks, GCP Persistent Disks)
 
 ### 7.3 Key Management
 
 **Key Hierarchy**:
-```
+
+```text
 Master Key (Hardware Security Module - HSM)
 ├─ Data Encryption Key 1 (DEK) - Database
 ├─ Data Encryption Key 2 (DEK) - Object Storage
@@ -872,12 +941,16 @@ Master Key (Hardware Security Module - HSM)
 ```
 
 **Envelope Encryption**:
+
+
 1. Data encrypted with DEK (fast, symmetric AES-256)
 2. DEK encrypted with Master Key (asymmetric, stored in HSM)
 3. Encrypted DEK stored with data
 4. Master Key never leaves HSM
 
 **Key Rotation**:
+
+
 - DEKs rotated every 90 days (automated)
 - Master Key rotated every 365 days (manual, audited)
 
@@ -888,6 +961,8 @@ Master Key (Hardware Security Module - HSM)
 ### 8.1 Events to Log
 
 **User Actions**:
+
+
 - Login/logout (success and failures)
 - Privacy mode changes
 - Data export/deletion requests
@@ -895,6 +970,8 @@ Master Key (Hardware Security Module - HSM)
 - Repository added/removed
 
 **System Actions**:
+
+
 - Model predictions served
 - Tool executions (what command, result)
 - Policy violations (secrets detected, license matches)
@@ -924,6 +1001,7 @@ CREATE TABLE audit_logs (
 ```
 
 **Example Entries**:
+
 ```sql
 INSERT INTO audit_logs (timestamp, org_id, user_id, action, metadata, result)
 VALUES
@@ -940,14 +1018,20 @@ VALUES
 ### 8.3 Immutable Logs
 
 **Write-Only Access**:
+
+
 - Application can INSERT, cannot UPDATE or DELETE
 - Only DBAs with elevated privileges can delete (after retention period)
 
 **Log Shipping**:
+
+
 - Stream logs to immutable storage (S3 Glacier, AWS CloudWatch Logs, Azure Monitor)
 - Enables forensic analysis even if attacker compromises database
 
 **Verification** (Optional, for high-security):
+
+
 - Cryptographically sign each log entry
 - Chain entries (each entry includes hash of previous entry)
 - Tamper-evident log (like blockchain)
@@ -963,12 +1047,16 @@ VALUES
 ### 8.5 Log Access
 
 **Who Can Access**:
+
+
 - **Users**: Their own logs via privacy dashboard
 - **Admins**: All logs for their organization
 - **Security Team**: All logs for incident response
 - **Regulators**: Upon legal request, with proper authorization
 
 **Redaction**:
+
+
 - Sensitive fields (e.g., code contents) redacted in UI
 - Full logs available only to security team and auditors
 
@@ -987,30 +1075,36 @@ VALUES
 ### 9.2 Response Plan
 
 #### Phase 1: Detection (0-15 minutes)
+
 - **Automated Alerts**: Monitoring systems detect anomaly
 - **On-Call Engineer**: PagerDuty notifies on-call
 - **Initial Assessment**: Severity (P0-P4), impact, urgency
 
 #### Phase 2: Containment (15-60 minutes)
+
 - **Isolate Affected Systems**: Disable compromised accounts, block IPs
 - **Stop Data Leakage**: Shut down affected services if necessary
 - **Preserve Evidence**: Take snapshots, save logs
 
 #### Phase 3: Investigation (1-24 hours)
+
 - **Root Cause Analysis**: What happened, how, why
 - **Scope Determination**: What data accessed, how many users affected
 - **Forensics**: Analyze logs, network traffic, system calls
 
 #### Phase 4: Eradication (24-72 hours)
+
 - **Remove Threat**: Patch vulnerabilities, revoke credentials, rebuild systems
 - **Verify Clean**: Ensure no backdoors or persistent access
 
 #### Phase 5: Recovery (72 hours - 1 week)
+
 - **Restore Services**: Bring systems back online incrementally
 - **Monitor**: Watch for recurrence
 - **Communicate**: Update users and stakeholders
 
 #### Phase 6: Post-Mortem (1-2 weeks after)
+
 - **Document Incident**: Timeline, actions taken, lessons learned
 - **Implement Fixes**: Long-term improvements to prevent recurrence
 - **Update Runbooks**: Refine incident response procedures
@@ -1020,13 +1114,15 @@ VALUES
 **Requirement**: Notify authorities within **72 hours** of becoming aware of a breach affecting EU data subjects.
 
 **Notification Process**:
+
 1. Assess if breach meets GDPR threshold (high risk to individuals' rights)
 2. Notify national Data Protection Authority (DPA) - for Slovakia: **Úrad na ochranu osobných údajov SR**
 3. If high risk, notify affected individuals directly
 4. Document breach, response, and mitigation in internal records
 
 **Template**:
-```
+
+```text
 Subject: Personal Data Breach Notification
 
 Dear Data Protection Authority,
@@ -1036,17 +1132,18 @@ We are notifying you of a personal data breach that occurred on [date].
 Nature of the breach: [description]
 Categories of data affected: [e.g., email addresses, code snippets]
 Number of individuals affected: [approximately X users]
-Likely consequences: [impact assessment]
+Example: Suspected Secret Leaksment]
 Measures taken: [containment and mitigation steps]
 Contact point: [security@company.com]
 
 [Company Name]
 [Date]
-```
+Example: Suspected Secret Leak
 
 ### 9.4 Runbooks
 
 **Example: Suspected Secret Leak**
+
 ```markdown
 ## Runbook: Secret Leak Response
 
@@ -1131,6 +1228,7 @@ Contact point: [security@company.com]
 This document provides comprehensive security and privacy controls for the Copilot-style coding agent:
 
 1. **Privacy Framework**: Three-tier privacy modes (local, partial, full) with user control
+
 2. **EU/GDPR Compliance**: Data residency, user rights, retention policies, DPA
 3. **Security Architecture**: Zero-trust, network segmentation, container hardening
 4. **Secret Detection**: Client and server-side redaction, user notifications
@@ -1141,6 +1239,7 @@ This document provides comprehensive security and privacy controls for the Copil
 9. **Incident Response**: Detection, containment, investigation, eradication, recovery
 
 **Implementation Priority**:
+
 - **P0 (Launch Blockers)**: Data residency, secret redaction, encryption, user consent
 - **P1 (Post-Launch)**: License detection, security audits, compliance certifications
 - **P2 (Continuous)**: Monitoring, incident response, training, improvements

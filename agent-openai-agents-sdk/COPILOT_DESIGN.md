@@ -1,4 +1,5 @@
 # Copilot-Style Coding Agent
+
 ## Production Implementation for Slovakia Engineering Team
 
 **Design Date**: February 23, 2026
@@ -40,7 +41,7 @@ This repository contains a complete, production-ready design for building a GitH
 ### Core Design Documents
 
 | Document | Description | Read Time |
-|----------|-------------|-----------|
+| -------- | ----------- | --------- |
 | **[ARCHITECTURE.md](./ARCHITECTURE.md)** | System architecture, high-level design, component overview, data flow | 30 min |
 | **[COMPONENTS.md](./COMPONENTS.md)** | Detailed specs for IDE plugins, App Server, Model Serving, Execution Sandbox, Data Stores, Monitoring | 90 min |
 | **[SECURITY.md](./SECURITY.md)** | Privacy framework, GDPR compliance, secret detection, license checks, encryption, audit logging | 60 min |
@@ -53,23 +54,27 @@ This repository contains a complete, production-ready design for building a GitH
 ### Quick Navigation
 
 **Getting Started**:
+
 1. Read [ARCHITECTURE.md](./ARCHITECTURE.md) for system overview
 2. Skim [ROADMAP.md](./ROADMAP.md) to understand timeline and phases
 3. Review [DEPLOYMENT.md](./DEPLOYMENT.md) for infrastructure requirements
 
 **For Engineers**:
+
 - [COMPONENTS.md](./COMPONENTS.md) - Implementation details
 - [TRAINING.md](./TRAINING.md) - ML pipeline and model training
-- [Code Examples](#code-examples) - Sample implementations (below)
+- Code Examples - Sample implementations (below)
 
 **For Product/Management**:
+
 - [ROADMAP.md](./ROADMAP.md) - Timeline, budget, team structure
-- [Success Metrics](#success-metrics) - KPIs and evaluation criteria
+- Success Metrics - KPIs and evaluation criteria
 - [SECURITY.md](./SECURITY.md) - Compliance and legal requirements
 
 **For Security/Legal**:
+
 - [SECURITY.md](./SECURITY.md) - GDPR, privacy, secrets management
-- [Data Governance](#data-governance) - Ethical use and copyright
+- Data Governance - Ethical use and copyright
 
 ---
 
@@ -174,7 +179,7 @@ code --install-extension copilot-agent-0.1.0.vsix
 2. Type: `def fibonacci(n):`
 3. Wait for inline suggestion (ghost text)
 4. Press `Tab` to accept suggestion
-5. Check telemetry dashboard: http://grafana.copilot-dev.svc.cluster.local
+5. Check telemetry dashboard: <http://grafana.copilot-dev.svc.cluster.local>
 
 ✅ **If you see a completion, congratulations!** You have a working PoC.
 
@@ -184,7 +189,7 @@ code --install-extension copilot-agent-0.1.0.vsix
 
 ### High-Level System Design
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                        CLIENT LAYER                              │
 │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐        │
@@ -215,6 +220,7 @@ code --install-extension copilot-agent-0.1.0.vsix
 ```
 
 **Key Principles**:
+
 - **Zero-Trust Security**: All components authenticate and authorize
 - **Privacy by Default**: Minimal data transmission, EU data residency
 - **Scalability**: Horizontal scaling for app server and model serving
@@ -231,6 +237,7 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed design.
 **Decision**: Use CodeLlama-7B (fast model) + Mixtral-8x22B (agent model)
 
 **Rationale**:
+
 - ✅ Full control over model weights and training
 - ✅ No data sent to third-party APIs (GDPR compliance)
 - ✅ Lower cost (no per-token charges)
@@ -245,6 +252,7 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed design.
 **Decision**: Start with AWS Frankfurt region, fully managed services
 
 **Rationale**:
+
 - ✅ Fast deployment (EKS, RDS, S3 readily available)
 - ✅ Data residency guaranteed (no cross-border transfers)
 - ✅ High availability with Multi-AZ
@@ -257,6 +265,7 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed design.
 **Decision**: Build VS Code plugin in Month 2, JetBrains in Month 5
 
 **Rationale**:
+
 - 60%+ of developers use VS Code (largest user base)
 - TypeScript ecosystem mature for extensions
 - Fastest time to pilot
@@ -268,6 +277,7 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed design.
 **Decision**: Default to Partial mode (active file only), opt-in for Full mode
 
 **Rationale**:
+
 - ✅ Balances privacy and functionality
 - ✅ GDPR-compliant (minimal data by default)
 - ✅ Gives users control (transparency)
@@ -279,6 +289,7 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed design.
 **Decision**: Implement RLHF loop in Month 5 (not after launch)
 
 **Rationale**:
+
 - Continuous improvement baked into architecture
 - Faster iteration based on real user feedback
 - Competitive advantage (model improves over time)
@@ -291,22 +302,26 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed design.
 
 ### Primary OKRs (6 Months)
 
-**Objective 1: High-Quality Suggestions**
+#### Objective 1: High-Quality Suggestions
+
 - ✅ **Acceptance Rate >60%** (% of suggestions accepted by users)
 - ✅ **Test Pass Rate >70%** (% of generated code passing tests)
 - ✅ **Hallucination Rate <10%** (% of invalid API usage)
 
-**Objective 2: Reliability & Performance**
+#### Objective 2: Reliability & Performance
+
 - ✅ **Uptime 99.5%** (SLA)
 - ✅ **Latency <500ms** (P95 for inline completions)
 - ✅ **Zero Critical Security Incidents**
 
-**Objective 3: User Satisfaction**
+#### Objective 3: User Satisfaction
+
 - ✅ **NPS >50** (Net Promoter Score)
 - ✅ **80% Weekly Active** (users with >10 completions/week)
 - ✅ **70% Positive Feedback** from pilot users
 
-**Objective 4: GDPR Compliance**
+#### Objective 4: GDPR Compliance
+
 - ✅ **100% EU Data Residency** (verified)
 - ✅ **All User Rights Implemented** (access, delete, export)
 - ✅ **PIA Approved** (Privacy Impact Assessment)
@@ -328,7 +343,7 @@ See [ROADMAP.md](./ROADMAP.md) for detailed success criteria.
 ### 6-Month Total: ~€435,000
 
 | Category | Amount (EUR) | Notes |
-|----------|-------------|-------|
+| -------- | ------------ | ----- |
 | **Infrastructure** | €100,000 | AWS/Azure (GPU, CPU, storage, network) |
 | **Team Salaries** | €307,500 | 8-12 people for 6 months |
 | **Security Audit** | €15,000 | Third-party penetration testing |
@@ -351,19 +366,23 @@ See [ROADMAP.md](./ROADMAP.md) for detailed breakdown.
 ### Recommended: 8-12 People
 
 **Engineering (7)**:
+
 - 1x Tech Lead / Architect
 - 2x Backend Engineers (App Server, API)
 - 2x ML Engineers (Model training, inference)
 - 2x Frontend/IDE Engineers (VS Code, JetBrains, Neovim)
 
 **Operations (2)**:
+
 - 1-2x DevOps/SRE (Infrastructure, CI/CD, monitoring)
 
 **Product & Design (2)**:
+
 - 1x Product Manager
 - 0.5-1x UX Designer
 
 **Security (0.5)**:
+
 - Part-time Security Consultant or Engineer
 
 See [ROADMAP.md](./ROADMAP.md) for roles and responsibilities.
@@ -373,18 +392,21 @@ See [ROADMAP.md](./ROADMAP.md) for roles and responsibilities.
 ## 🗓️ 6-Month Timeline
 
 ### Month 1-2: Foundation & PoC
+
 - Team assembly, infrastructure setup
 - App Server skeleton, model serving PoC
 - VS Code plugin prototype
 - **Milestone**: First end-to-end completion
 
 ### Month 3-4: Pilot Launch
+
 - Agent runtime, execution sandbox
 - Chat pane, privacy controls
 - License detection, security audit
 - **Milestone**: 10-20 users in pilot
 
 ### Month 5-6: Production Rollout
+
 - Scale infrastructure (multi-AZ, autoscaling)
 - JetBrains and Neovim plugins
 - RLHF training loop
@@ -631,10 +653,12 @@ This is an implementation design. To contribute:
 This design document is provided under **CC BY 4.0** (Creative Commons Attribution 4.0 International).
 
 You are free to:
+
 - **Share**: Copy and redistribute in any medium or format
 - **Adapt**: Remix, transform, and build upon the material
 
 Under the following terms:
+
 - **Attribution**: Give appropriate credit, provide a link to the license, and indicate if changes were made
 
 **Code examples** (if any) are provided under **MIT License**.
@@ -646,19 +670,19 @@ Under the following terms:
 ### Questions?
 
 - **Technical**: Open an issue with `[Question]` tag
-- **Security**: Email security@copilot-team.example.com (PGP key available)
-- **Legal/GDPR**: Email legal@copilot-team.example.com
+- **Security**: Email <security@copilot-team.example.com> (PGP key available)
+- **Legal/GDPR**: Email <legal@copilot-team.example.com>
 
 ### Resources
 
 - **Slack**: #copilot-agent (internal team channel)
-- **Documentation**: https://docs.copilot-agent.example.com (once deployed)
-- **Status Page**: https://status.copilot-agent.example.com (uptime, incidents)
+- **Documentation**: <https://docs.copilot-agent.example.com> (once deployed)
+- **Status Page**: <https://status.copilot-agent.example.com> (uptime, incidents)
 
 ### Team
 
 **Designed by**: Slovakia Engineering Team
-**Contact**: tech-lead@copilot-team.example.com
+**Contact**: <tech-lead@copilot-team.example.com>
 
 ---
 
@@ -678,9 +702,9 @@ Special thanks to the open-source community for tools like vLLM, Kubernetes, Ter
 
 ## 📅 Document History
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0 | Feb 23, 2026 | Initial complete design |
+| Version | Date         | Changes                 |
+| ------- | ------------ | ----------------------- |
+| 1.0     | Feb 23, 2026 | Initial complete design |
 
 ---
 
