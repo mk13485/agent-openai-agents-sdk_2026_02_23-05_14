@@ -2,5 +2,6 @@
     "colab.activityBar": true,
     "colab.serverMounting": true,
     "colab.terminal": true,
-    "colab.uploading": true
+    "colab.uploading": true,
+    "chat.experimental.useSkillAdherencePrompt": true
 }
