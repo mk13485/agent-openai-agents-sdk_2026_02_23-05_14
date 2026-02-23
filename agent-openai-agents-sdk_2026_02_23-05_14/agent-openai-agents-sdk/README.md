@@ -10,6 +10,14 @@ The agent input and output format are defined by MLflow's ResponsesAgent interfa
 
 We recommend using AI coding assistants (Claude Code, Cursor, GitHub Copilot) to customize and deploy this template. Agent Skills in `.claude/skills/` provide step-by-step guidance for common tasks like setup, adding tools, and deployment. These skills are automatically detected by Claude, Cursor, and GitHub Copilot.
 
+## 📚 Documentation & Resources
+
+- **[QUICKSTART.md](./QUICKSTART.md)** - Comprehensive setup guide with multiple methods
+- **[CHECKLIST.md](./CHECKLIST.md)** - Step-by-step checklist to get up and running
+- **[COMMANDS.md](./COMMANDS.md)** - Quick reference for all common commands
+- **[verify_setup.py](./verify_setup.py)** - Automated setup verification script
+- **[setup.sh](./setup.sh)** - Alternative automated setup script
+
 ## Quick start
 
 Run the `uv run quickstart` script to quickly set up your local environment and start the agent server. At any step, if there are issues, refer to the manual local development loop setup below.
