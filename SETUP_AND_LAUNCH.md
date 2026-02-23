@@ -27,13 +27,14 @@ python3 setup_and_launch.py
 ```
 
 This will automatically:
+
 1. ✅ Check Databricks authentication
 2. ✅ Create MLflow experiment
 3. ✅ Update .env file
 4. ✅ Verify dependencies
 5. ✅ Start Agent Server on port 8000
 6. ✅ Start Chat UI on port 3000
-7. ✅ Open browser to http://localhost:3000
+7. ✅ Open browser to <http://localhost:3000>
 
 ---
 
@@ -82,6 +83,7 @@ nano .env  # or use your preferred editor
 ```
 
 **Update these in `.env`:**
+
 ```env
 DATABRICKS_CONFIG_PROFILE=DEFAULT
 MLFLOW_EXPERIMENT_ID=<paste-your-experiment-id-here>
@@ -117,7 +119,8 @@ python -m agent_server.start_server
 ```
 
 **Expected output:**
-```
+
+```text
 INFO:     Uvicorn running on http://0.0.0.0:8000
 ```
 
@@ -137,7 +140,8 @@ uv run start-app
 ```
 
 **Expected output:**
-```
+
+```text
 ✓ Frontend is ready!
 ✓ Open the frontend at http://localhost:3000
 ```
@@ -147,7 +151,8 @@ uv run start-app
 ### **Step 7: Open in Browser**
 
 Open your browser and navigate to:
-```
+
+```text
 http://localhost:3000
 ```
 
@@ -161,9 +166,9 @@ Once the UI loads:
 2. **Press Enter** to send
 3. **Wait for the agent to respond** (real-time streaming)
 
-### Sample Prompts:
+### Sample Prompts
 
-```
+```text
 "What is 2 + 2?"
 "Calculate the square root of 100"
 "Create a list of numbers from 1 to 5 and find the average"
@@ -292,7 +297,7 @@ After your agent is running:
 ## 📚 Additional Commands
 
 | Task | Command |
-|------|---------|
+| ---- | ------- |
 | Stop services | Press `Ctrl+C` in each terminal |
 | Restart all | Run `python setup_and_launch.py` again |
 | View active ports | `lsof -i :8000` and `lsof -i :3000` |

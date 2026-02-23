@@ -11,7 +11,6 @@ import json
 import time
 import signal
 from pathlib import Path
-from dotenv import load_dotenv
 
 # Colors for output
 GREEN = '\033[92m'
@@ -170,11 +169,14 @@ def check_dependencies():
         "databricks-openai",
         "mlflow",
         "openai-agents",
+        "python-dotenv",
     ]
 
     missing = []
     for package in required_packages:
-        result = run_command(f"python3 -c 'import {package.replace(\"-\", \"_\")}'", check=False)
+        # Convert package name to import name (e.g., python-dotenv -> dotenv)
+        import_name = package.replace("-", "_").replace("python_dotenv", "dotenv")
+        result = run_command(f'python3 -c "import {import_name}"', check=False)
         if result and result.returncode == 0:
             print_success(f"{package} is installed")
         else:
@@ -189,6 +191,14 @@ def check_dependencies():
 def start_services():
     """Start Agent Server and Chat UI"""
     print_section("STARTING SERVICES")
+
+    # Import dotenv here after dependencies are installed
+    try:
+        from dotenv import load_dotenv  # type: ignore
+    except ImportError:
+        print_error("python-dotenv not installed. Installing...")
+        run_command("pip install -q python-dotenv", show_output=True)
+        from dotenv import load_dotenv  # type: ignore
 
     # Load environment
     load_dotenv(ENV_FILE)
@@ -222,9 +232,12 @@ def open_browser():
     if system == 'Darwin':  # macOS
         os.system(f'open "{url}"')
     elif system == 'Linux':
-        os.system(f'xdg-open "{url}" 2>/dev/null || echo "Open {url} in your browser"')
+        # Try xdg-open, if it fails, print a message
+        result = os.system(f'xdg-open "{url}" 2>/dev/null')
+        if result != 0:
+            print_info(f"Please open {url} in your browser")
     elif system == 'Windows':
-        os.system(f'start {url}')
+        os.system(f'start "" "{url}"')
     else:
         print_info(f"Please open {url} in your browser")
 
