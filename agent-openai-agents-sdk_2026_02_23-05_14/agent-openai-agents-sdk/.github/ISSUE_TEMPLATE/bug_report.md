@@ -27,7 +27,7 @@ A clear and concise description of what actually happened.
 
 ## Error Messages
 
-```
+```text
 Paste any error messages, stack traces, or logs here
 ```
 
