@@ -1,0 +1,223 @@
+# Professional Agent Configuration Template (app.yaml)
+# =======================================================
+#
+# This template defines the configuration for deploying an agent application
+# on Databricks. Customize the sections below for your specific agent deployment.
+#
+
+# ============================================================================
+# Basic Application Metadata
+# ============================================================================
+
+# Readable name for your application
+name: "[AGENT_NAME_KEBAB]"
+
+# Application description (appears in Databricks UI)
+description: "[Brief description of what this agent does and its primary capabilities]"
+
+# Version tracking
+version: "0.1.0"
+
+# ============================================================================
+# Framework & Runtime Configuration
+# ============================================================================
+
+framework: "fastapi"
+
+# Command to start the application
+# By default, Databricks apps listen on port 8000
+command: ["uv", "run", "start-app"]
+
+# Application port (default: 8000)
+port: 8000
+
+# Timeout for application startup (seconds)
+# Increase for complex initialization
+startup_timeout_seconds: 120
+
+# ============================================================================
+# Environment Variables
+# ============================================================================
+
+env:
+  # MLflow Configuration - for experiment tracking and logging
+  - name: "MLFLOW_TRACKING_URI"
+    value: "databricks"
+
+  - name: "MLFLOW_REGISTRY_URI"
+    value: "databricks-uc"
+
+  # Agent API Configuration
+  - name: "API_PROXY"
+    value: "http://localhost:8000/invocations"
+
+  # Chat frontend configuration
+  - name: "CHAT_APP_PORT"
+    value: "3000"
+
+  - name: "CHAT_PROXY_TIMEOUT_SECONDS"
+    value: "300"
+
+  # Logging Configuration
+  - name: "LOG_LEVEL"
+    value: "INFO"
+
+  # Custom environment variables for your agent
+  # Uncomment and add as needed:
+  # - name: "AGENT_MAX_RETRIES"
+  #   value: "3"
+  # - name: "AGENT_TIMEOUT_SECONDS"
+  #   value: "300"
+  # - name: "VECTOR_SEARCH_ENDPOINT"
+  #   value: "[YOUR_ENDPOINT]"
+
+# ============================================================================
+# Experiment Tracking & Observability
+# ============================================================================
+
+# Reference to MLflow experiment for logging agent metrics
+# valueFrom references values provided at deployment time
+mlflow_experiment_id:
+  valueFrom: "experiment"
+
+# Optional: Configure custom MLflow tracking for this agent
+# tracking_server: "https://your-databricks-instance.cloud.databricks.com"
+
+# ============================================================================
+# Resource Allocation & Scaling
+# ============================================================================
+
+# Compute requirements (optional, uses workspace defaults if not specified)
+resources:
+  # Minimum CPU cores required
+  cpu: "2"
+
+  # Memory allocation (in MB)
+  memory: "4096"
+
+  # GPU allocation (if needed for inference acceleration)
+  # Uncomment to enable GPU:
+  # gpu_count: 1
+
+# Auto-scaling configuration (optional)
+# max_concurrent_requests: 100
+
+# ============================================================================
+# Secrets & Authentication
+# ============================================================================
+
+# Secrets mounted from Databricks Secret Scope
+# These are injected as environment variables at runtime
+# secrets:
+#   - scope: "your-secret-scope"
+#     key: "openai_api_key"
+#     envVar: "OPENAI_API_KEY"
+#   - scope: "your-secret-scope"
+#     key: "database_password"
+#     envVar: "DB_PASSWORD"
+
+# ============================================================================
+# Dependencies & Packages
+# ============================================================================
+
+# Python package requirements
+# All dependencies should be listed in requirements.txt or pyproject.toml
+# This configuration assumes uv package manager is used
+
+# Additional system packages (if using system package manager)
+# system_packages:
+#   - "curl"
+#   - "git"
+
+# ============================================================================
+# Network & Connectivity
+# ============================================================================
+
+# Expose the application on the Databricks workspace network
+public: false
+
+# Route configuration (optional)
+# routes:
+#   - path: "/health"
+#     method: "GET"
+#     timeout: "10s"
+
+# ============================================================================
+# Database & Data Access
+# ============================================================================
+
+# Unity Catalog configurations for agent tool access
+# These should match the permissions defined in databricks.yml
+# catalog:
+#   default_catalog: "your_catalog"
+#   schema: "your_schema"
+
+# Vector Search endpoint for RAG capabilities (if applicable)
+# vector_search:
+#   endpoint: "[YOUR_VECTOR_SEARCH_ENDPOINT]"
+#   index: "[YOUR_INDEX_NAME]"
+
+# ============================================================================
+# Monitoring & Alerting
+# ============================================================================
+
+# Health check endpoint configuration
+# health_check:
+#   path: "/health"
+#   interval_seconds: 30
+#   timeout_seconds: 10
+
+# Optional: Custom metrics to track
+# metrics:
+#   - name: "request_count"
+#     type: "counter"
+#   - name: "response_latency_ms"
+#     type: "histogram"
+
+# ============================================================================
+# Advanced Configuration
+# ============================================================================
+
+# Enable detailed logging for troubleshooting
+# debug: true
+
+# Custom error handling
+# Uncomment to define error page template:
+# error_handler:
+#   template: "error.html"
+
+# Rate limiting (optional)
+# rate_limit:
+#   requests_per_minute: 100
+#   burst_size: 10
+
+# CORS configuration for external integrations
+# cors:
+#   allow_origins:
+#     - "https://trusted-domain.com"
+#   allow_methods: ["GET", "POST"]
+
+# ============================================================================
+# Notes for Configuration
+# ============================================================================
+
+# Common Customizations:
+# 1. Update [AGENT_NAME_KEBAB] with your agent name (lowercase with hyphens)
+# 2. Set proper resource allocation based on your model and workload
+# 3. Configure environment variables specific to your agent
+# 4. Add secrets from Databricks Secret Scope as needed
+# 5. Specify catalog/schema for Unity Catalog access
+# 6. Update timeout values based on expected agent latency
+#
+# Deployment:
+# Run: databricks bundle deploy
+# Start: databricks bundle run agent_openai_agents_sdk
+#
+# Troubleshooting:
+# 1. Check logs: databricks apps logs [app-name] --follow
+# 2. Verify secrets: databricks secrets list-scopes
+# 3. Test locally: uv run start-app
+#
+# References:
+# - https://docs.databricks.com/en/dev-tools/apps/index.html
+# - https://docs.databricks.com/en/generative-ai/agent-framework/
