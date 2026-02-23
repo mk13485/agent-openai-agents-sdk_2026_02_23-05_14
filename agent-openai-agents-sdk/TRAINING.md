@@ -1,4 +1,5 @@
 # Data & Training Plan
+
 **Copilot-Style Coding Agent - ML Training Strategy**
 **Date: February 23, 2026**
 
@@ -58,17 +59,20 @@
 ### 2.1 Public Code Corpora
 
 #### The Stack (HuggingFace)
+
 - **Size**: 3TB+ of permissively licensed code
 - **Languages**: 30+ programming languages
 - **Licenses**: MIT, Apache-2.0, BSD (pre-filtered)
-- **URL**: https://huggingface.co/datasets/bigcode/the-stack
+- **URL**: <https://huggingface.co/datasets/bigcode/the-stack>
 
 **Considerations**:
+
 - Already used to train StarCoder, CodeLlama
 - Download and host locally (EU servers for compliance)
 - Additional filtering may be needed (secrets, PII)
 
 #### GitHub Public Repos
+
 - **Size**: Petabytes (subset based on criteria)
 - **Selection Criteria**:
   - Stars >10 (popularity filter)
@@ -78,17 +82,20 @@
 - **Access**: GitHub Archive, BigQuery Public Datasets
 
 **Considerations**:
+
 - Massive scale, requires filtering infrastructure
 - License detection critical (see [SECURITY.md](./SECURITY.md))
 - Respect rate limits if scraping directly
 
 #### Stack Overflow
+
 - **Size**: 50M+ questions and answers
 - **License**: CC BY-SA 4.0 (attribution required)
 - **Use Case**: Code snippets with explanations
 - **Access**: Stack Overflow Data Dump (quarterly)
 
 **Considerations**:
+
 - Attribution required (display "Source: Stack Overflow" in UI)
 - Quality varies (upvote filtering helps)
 - Focus on high-voted answers
@@ -96,27 +103,32 @@
 ### 2.2 Internal Code Repositories (Opt-In)
 
 #### Organization Repos
+
 - **Source**: Internal GitLab/GitHub Enterprise
 - **Size**: Varies (1-100GB per org)
 - **Consent**: Explicit opt-in per repository
 - **Use Case**: Domain-specific conventions, internal libraries
 
 **Considerations**:
+
 - **GDPR Critical**: Get explicit consent from org and developers
 - **Privacy**: Never include secrets, PII, or proprietary business logic in training
 - **Anonymization**: Strip author info, commit messages (optional)
 
 #### Code Review Data
+
 - **Source**: Pull request comments, code reviews
 - **Use Case**: Learn from expert feedback (e.g., "This should use async/await" → improve suggestion)
 
 **Considerations**:
+
 - High-value signal (human expert corrections)
 - Privacy: anonymize reviewers, redact sensitive comments
 
 ### 2.3 Synthetic Data
 
 #### Test Case Generation
+
 - **Method**: Use LLM to generate tests for functions
 - **Example**:
   - Input: Function signature `def add(a, b)`
@@ -124,10 +136,12 @@
 - **Use Case**: Train agent model to generate tests
 
 #### Code Transformation Pairs
+
 - **Method**: Automated transformations (e.g., Python 2 → Python 3, refactor to use list comprehensions)
 - **Use Case**: Train refactoring capabilities
 
 #### Documentation → Code
+
 - **Method**: Generate code from docstrings or comments
 - **Example**:
   - Input: `# Function to calculate factorial recursively`
@@ -136,6 +150,7 @@
 ### 2.4 Human-Curated Examples
 
 #### High-Quality Prompts
+
 - **Method**: Engineers write ideal prompt-completion pairs
 - **Example**:
   - Prompt: `# Parse JSON from API response`
@@ -143,8 +158,10 @@
 - **Volume**: 500-1000 examples per language
 
 #### Tool-Use Traces
+
 - **Method**: Manually create examples of agent using tools
 - **Example**:
+
   ```json
   {
     "task": "Add caching to user service",
@@ -155,6 +172,7 @@
     ]
   }
   ```
+
 - **Volume**: 100-200 traces covering common workflows
 
 ---
@@ -163,7 +181,7 @@
 
 ### 3.1 Architecture
 
-```
+```text
 ┌────────────────────────────────────────────────────────────┐
 │                   DATA SOURCES                             │
 │  ┌────────────┐  ┌────────────┐  ┌─────────────────────┐  │
@@ -208,6 +226,7 @@
 ### 3.2 Ingestion (Apache Airflow)
 
 **DAG Example** (daily GitHub crawl):
+
 ```python
 from airflow import DAG
 from airflow.operators.python import PythonOperator
@@ -252,6 +271,7 @@ with DAG(
 ### 3.3 Filtering (PySpark)
 
 **Secret Detection**:
+
 ```python
 from pyspark.sql import SparkSession
 import re
@@ -279,6 +299,7 @@ filtered_df.write.parquet("s3://training-data/filtered/")
 ```
 
 **License Detection**:
+
 ```python
 def get_license(repo_url: str, file_path: str) -> str:
     """Query license database for repo."""
@@ -296,6 +317,7 @@ filtered_df = df.filter(df["license"].isin(ALLOWED_LICENSES))
 ### 3.4 Tokenization
 
 **Pre-Tokenization for Training**:
+
 ```python
 from transformers import AutoTokenizer
 
@@ -318,7 +340,7 @@ df_tokenized.write.parquet("s3://training-data/tokenized/")
 ### 4.1 Filtering Criteria
 
 | Filter | Purpose | Rejection Rate |
-|--------|---------|----------------|
+| -------- | --------- | -------------- |
 | **License Check** | Reject non-permissive licenses | ~30% |
 | **Secret Detection** | Reject files with API keys, passwords | ~5% |
 | **PII Detection** | Reject files with emails, phone numbers | ~2% |
@@ -332,6 +354,7 @@ df_tokenized.write.parquet("s3://training-data/tokenized/")
 ### 4.2 Quality Scoring
 
 **Heuristics**:
+
 ```python
 def quality_score(code: str, metadata: dict) -> float:
     """Compute quality score (0.0-1.0)."""
@@ -371,6 +394,7 @@ df_quality = df.filter(df["quality_score"] > 0.6)
 ### 4.3 Deduplication
 
 **Exact Deduplication** (hash-based):
+
 ```python
 import hashlib
 
@@ -382,6 +406,7 @@ df_dedup = df.dropDuplicates(["code_hash"])
 ```
 
 **Near-Deduplication** (MinHash):
+
 ```python
 from datasketch import MinHash, MinHashLSH
 
@@ -410,24 +435,29 @@ for idx, row in df.iterrows():
 #### Option 1: Open-Source Models (Recommended)
 
 **Fast Model**: CodeLlama-7B
+
 - **Pros**: Good quality, open weights, commercially usable
 - **Cons**: Requires fine-tuning for best results
 
 **Agent Model**: Mixtral-8x22B (Mixture of Experts)
+
 - **Pros**: Strong reasoning, efficient (sparse activation), open weights
 - **Cons**: Large model (141B total params), requires A100/H100 GPUs
 
 #### Option 2: Commercial APIs
 
 **Fast Model**: GPT-3.5-Turbo (via OpenAI API)
+
 - **Pros**: Proven quality, no hosting needed
 - **Cons**: Data leaves EU (GDPR concerns), cost per token
 
 **Agent Model**: GPT-4-Turbo or Claude-3-Opus
+
 - **Pros**: Best quality, tool-use support built-in
 - **Cons**: Expensive, data residency issues
 
 **Recommended for Slovakia Team**:
+
 - **Start**: CodeLlama-7B + Mixtral-8x22B (open-source)
 - **Fallback**: If quality insufficient, evaluate GPT-4 API with EU data residency option (if available)
 
@@ -436,16 +466,19 @@ for idx, row in df.iterrows():
 #### Hardware Requirements
 
 **Fine-Tuning Fast Model (7B)**:
+
 - **GPUs**: 1-2x NVIDIA A100 (40GB) or 4x A10G (24GB)
 - **Training Time**: ~24-48 hours for full fine-tune
 - **Cost**: ~€500-€1,000 per training run (cloud spot instances)
 
 **Fine-Tuning Agent Model (70B)**:
+
 - **GPUs**: 8x NVIDIA A100 (80GB) or 4x H100 (80GB)
 - **Training Time**: ~3-7 days for full fine-tune
 - **Cost**: ~€10,000-€20,000 per training run
 
 **Alternative: PEFT (Parameter-Efficient Fine-Tuning)**:
+
 - **Method**: LoRA (Low-Rank Adaptation)
 - **GPUs**: 1-2x A100 for 7B model, 4-8x A100 for 70B model
 - **Training Time**: 50% faster than full fine-tune
@@ -457,6 +490,7 @@ for idx, row in df.iterrows():
 #### Training Framework
 
 **DeepSpeed** (Microsoft):
+
 ```python
 from transformers import AutoModelForCausalLM, Trainer, TrainingArguments
 from peft import get_peft_model, LoraConfig
@@ -508,12 +542,14 @@ trainer.train()
 **Goal**: Teach model to generate code in expected format (completions, explanations, tool calls)
 
 **Data Format** (JSONL):
+
 ```jsonl
 {"prompt": "def calculate_sum(numbers: list[int]) -> int:", "completion": "\n    \"\"\"Calculate sum of integers.\"\"\"\n    return sum(numbers)"}
 {"prompt": "# TODO: Add error handling for division by zero\ndef divide(a: float, b: float) -> float:", "completion": "\n    if b == 0:\n        raise ValueError(\"Cannot divide by zero\")\n    return a / b"}
 ```
 
 **Training**:
+
 ```python
 # Load dataset
 from datasets import load_dataset
@@ -533,6 +569,7 @@ tokenized_dataset = dataset.map(tokenize_function, batched=True)
 ```
 
 **Hyperparameters**:
+
 - Learning rate: 1e-5 to 5e-5
 - Batch size: 32-128 (with gradient accumulation)
 - Epochs: 1-3 (avoid overfitting)
@@ -543,11 +580,13 @@ tokenized_dataset = dataset.map(tokenize_function, batched=True)
 **Goal**: Teach model to follow natural language instructions (for agent model)
 
 **Data Format**:
+
 ```jsonl
 {"instruction": "Refactor this function to use async/await", "input": "def fetch_data(url):\n    return requests.get(url).json()", "output": "import httpx\n\nasync def fetch_data(url: str) -> dict:\n    async with httpx.AsyncClient() as client:\n        response = await client.get(url)\n        return response.json()"}
 ```
 
 **Dataset Construction**:
+
 - Generate synthetic instructions using GPT-4
 - Collect from user queries in pilot phase
 - Curate from Stack Overflow (instruction = question, answer = explanation + code)
@@ -557,6 +596,7 @@ tokenized_dataset = dataset.map(tokenize_function, batched=True)
 **Goal**: Teach agent model to call tools (test runners, linters, git commands)
 
 **Data Format** (Function Calling):
+
 ```jsonl
 {
   "messages": [
@@ -576,6 +616,7 @@ tokenized_dataset = dataset.map(tokenize_function, batched=True)
 ```
 
 **Training**:
+
 - Fine-tune agent model on 100-200 tool-use traces
 - Use OpenAI's function calling format for compatibility
 - Test extensively (agent should reliably call tools correctly)
@@ -589,7 +630,8 @@ tokenized_dataset = dataset.map(tokenize_function, batched=True)
 **Goal**: Optimize model based on user preferences (accepted vs rejected suggestions)
 
 **Workflow**:
-```
+
+```text
 1. Collect feedback: User accepts or rejects completions
 2. Train reward model: Learn to predict which suggestions users prefer
 3. Optimize policy: Use PPO (Proximal Policy Optimization) to maximize reward
@@ -600,12 +642,14 @@ tokenized_dataset = dataset.map(tokenize_function, batched=True)
 ### 7.2 Feedback Collection
 
 **Signals**:
+
 - **Positive**: User accepts suggestion (presses Tab)
 - **Negative**: User rejects (presses Esc or types different code)
 - **Strong Positive**: User accepts + code passes tests
 - **Strong Negative**: User reports issue (thumbs down button)
 
 **Data Storage**:
+
 ```jsonl
 {"prompt": "def add(a, b):", "completion": "\n    return a + b", "accepted": true, "test_result": "pass", "timestamp": "2026-02-23T10:00:00Z"}
 {"prompt": "class User:", "completion": "\n    def __init__(self, name):\n        self.name = name", "accepted": false, "reason": "user_typed_different", "timestamp": "2026-02-23T10:05:00Z"}
@@ -619,6 +663,7 @@ tokenized_dataset = dataset.map(tokenize_function, batched=True)
 **Output**: Score (0.0 = bad, 1.0 = good)
 
 **Training**:
+
 ```python
 from transformers import AutoModelForSequenceClassification, Trainer
 
@@ -638,10 +683,12 @@ model = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased", 
 **Goal**: Update model to maximize expected reward
 
 **Libraries**:
+
 - **TRL (Transformer Reinforcement Learning)**: HuggingFace library
 - **DeepSpeed-Chat**: Microsoft's RLHF toolkit
 
 **PPO Training**:
+
 ```python
 from trl import PPOTrainer, PPOConfig
 from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -684,6 +731,7 @@ for epoch in range(10):
 ```
 
 **Hyperparameters**:
+
 - Learning rate: 1e-6 to 1e-5 (smaller than SFT)
 - PPO clip: 0.2
 - KL penalty: 0.01 (prevent model from diverging too much from base)
@@ -694,11 +742,13 @@ for epoch in range(10):
 **Problem**: RLHF can lead to "reward hacking" (model games reward without being helpful)
 
 **Solutions**:
+
 1. **KL Divergence Penalty**: Penalize model for straying too far from base model
 2. **Rule-Based Filters**: Reject completions with secrets, syntax errors, license violations
 3. **Multi-Objective Reward**: Optimize for acceptance rate AND test pass rate AND safety
 
 **Combined Reward**:
+
 ```python
 def compute_reward(completion, context):
     reward = 0.0
@@ -733,17 +783,20 @@ def compute_reward(completion, context):
 ### 8.1 Internal Evaluation
 
 **Metrics**:
+
 - **Acceptance Rate**: % of suggestions accepted by users (target: >60%)
 - **Test Pass Rate**: % of generated code that compiles and passes tests (target: >70%)
 - **Latency**: P95 inference time (target: <500ms for fast model)
 - **Hallucination Rate**: % of suggestions with invalid API usage (target: <10%)
 
 **Evaluation Dataset**:
+
 - Hold-out set from training data (10% of curated examples)
 - Real user prompts from pilot phase
 - Synthetic prompts covering edge cases
 
 **Automated Tests**:
+
 ```python
 def evaluate_model(model, eval_dataset):
     total = 0
@@ -777,11 +830,13 @@ def evaluate_model(model, eval_dataset):
 ### 8.2 Public Benchmarks
 
 #### HumanEval (OpenAI)
+
 - **Size**: 164 hand-written Python programming problems
 - **Metric**: pass@k (% of problems solved with k attempts)
 - **Baseline**: GPT-3.5-Turbo ~48%, GPT-4 ~67%, CodeLlama-7B ~30%
 
 **Run Evaluation**:
+
 ```bash
 # Clone HumanEval
 git clone https://github.com/openai/human-eval
@@ -791,11 +846,13 @@ python evaluate.py --model codellama/CodeLlama-7b-hf --temperature 0.8 --k 10
 ```
 
 #### MBPP (Mostly Basic Python Problems)
+
 - **Size**: 974 Python problems
 - **Difficulty**: Easier than HumanEval
 - **Metric**: pass@k
 
 #### MultiPL-E (Multi-Language)
+
 - **Size**: HumanEval translated to 18 languages
 - **Languages**: Python, JavaScript, Java, C++, Go, Rust, etc.
 - **Use Case**: Test language-agnostic performance
@@ -805,6 +862,7 @@ python evaluate.py --model codellama/CodeLlama-7b-hf --temperature 0.8 --k 10
 **Method**: Have engineers rate suggestions (1-5 scale)
 
 **Criteria**:
+
 1. **Correctness**: Does the code work?
 2. **Idiomatic**: Is it written in language-idiomatic style?
 3. **Concise**: Is it unnecessarily verbose?
@@ -821,12 +879,14 @@ python evaluate.py --model codellama/CodeLlama-7b-hf --temperature 0.8 --k 10
 ### 9.1 Retraining Cadence
 
 **Weekly Retraining** (Fast Model):
+
 - **Data**: Last week's accepted suggestions (10,000-50,000 examples)
 - **Method**: LoRA fine-tune (quick, cheap)
 - **Duration**: ~6 hours
 - **Deploy**: Canary test for 24 hours, then full rollout
 
 **Monthly Retraining** (Agent Model):
+
 - **Data**: Last month's accepted suggestions + RLHF feedback
 - **Method**: Full fine-tune or large LoRA
 - **Duration**: ~2-3 days
@@ -835,16 +895,19 @@ python evaluate.py --model codellama/CodeLlama-7b-hf --temperature 0.8 --k 10
 ### 9.2 A/B Testing
 
 **Setup**:
+
 - Serve two models simultaneously (old vs new)
 - Route 10% of traffic to new model (canary)
 - Compare metrics (acceptance rate, latency, errors)
 
 **Decision Criteria**:
+
 - If new model acceptance rate >5% higher: full rollout
 - If new model acceptance rate <5% higher OR worse latency: rollback
 - If inconclusive: expand canary to 50%, test for another week
 
 **Implementation** (Kubernetes):
+
 ```yaml
 apiVersion: v1
 kind: Service
@@ -903,11 +966,12 @@ spec:
 
 ### 9.3 Feedback Loop
 
-```
+```text
 Users → Completions → Accept/Reject → Telemetry DB → Training Pipeline → New Model → Deploy → Users
 ```
 
 **Automation**:
+
 - Daily: Export accepted/rejected suggestions to S3
 - Weekly: Trigger training pipeline (Airflow DAG)
 - Weekly: Train new model, evaluate on hold-out set
@@ -921,12 +985,14 @@ Users → Completions → Accept/Reject → Telemetry DB → Training Pipeline �
 ### 10.1 Privacy
 
 **GDPR Compliance**:
+
 - **Consent**: Explicit opt-in for training on user code
 - **Anonymization**: Strip author names, emails from training data
 - **Right to Delete**: Remove user's data from training set (and retrain if necessary)
 - **Data Minimization**: Use only necessary data (code, not comments with personal info)
 
 **Implementation**:
+
 ```python
 def anonymize_training_sample(sample: dict) -> dict:
     """Remove PII before training."""
@@ -946,11 +1012,13 @@ def anonymize_training_sample(sample: dict) -> dict:
 ### 10.2 Bias & Fairness
 
 **Risks**:
+
 - Model trained mostly on English comments may perform worse for non-English developers
 - Over-representation of certain languages (Python, JavaScript) vs under-representation (COBOL, Fortran)
 - Biased towards popular frameworks (React, Django) vs niche ones
 
 **Mitigation**:
+
 - **Balanced Dataset**: Ensure all major languages represented (Python, JS, Java, Go, Rust, C++, etc.)
 - **Internationalization**: Include code with non-English comments (German, Slovak, etc.)
 - **Evaluation**: Test model on diverse set of languages and frameworks
@@ -958,11 +1026,13 @@ def anonymize_training_sample(sample: dict) -> dict:
 ### 10.3 Copyright & Licensing
 
 **Training Data**:
+
 - **Only Permissive Licenses**: MIT, Apache-2.0, BSD
 - **No GPL/AGPL**: Viral licenses excluded to avoid copyright issues
 - **Attribution**: Track provenance, display source if high similarity detected
 
 **Generated Code**:
+
 - **Disclaimer**: "Suggestions are AI-generated and may not be original. Review before using."
 - **License Detection**: Warn user if generated code matches copyrighted code
 - **No Warranty**: Not liable for copyright infringement by users (terms of service)
@@ -970,11 +1040,13 @@ def anonymize_training_sample(sample: dict) -> dict:
 ### 10.4 Ethical Use
 
 **Prohibited Uses** (in Terms of Service):
+
 - Generating malware, exploits, or harmful code
 - Bypassing security systems
 - Violating third-party intellectual property
 
 **Enforcement**:
+
 - **Content Filters**: Detect and block malicious code patterns
 - **Abuse Detection**: Flag users with high rejection rate + suspicious patterns
 - **Human Review**: Investigate flagged cases
@@ -995,12 +1067,14 @@ This training plan provides:
 8. **Data Governance**: GDPR compliance, bias mitigation, copyright protection, ethical use policies
 
 **Key Success Factors**:
+
 - **High-Quality Data**: Aggressive filtering (50% rejection rate) for best training data
 - **User Feedback**: RLHF loop to continuously improve from real usage
 - **Safety First**: Secret detection, license checks, and abuse prevention built-in
 - **Transparency**: Clear disclosure of AI-generated code, attribution when needed
 
 **Next Steps**:
+
 1. Download The Stack dataset (permissive subset)
 2. Set up data pipeline (Airflow + PySpark on EMR or Dataproc)
 3. Run initial filtering and quality checks
@@ -1009,6 +1083,7 @@ This training plan provides:
 6. Deploy to staging for initial testing
 
 **Dependencies**:
+
 - [ARCHITECTURE.md](./ARCHITECTURE.md): System design
 - [COMPONENTS.md](./COMPONENTS.md): Model serving infrastructure
 - [SECURITY.md](./SECURITY.md): Secret detection, privacy controls
