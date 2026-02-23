@@ -39,7 +39,7 @@ After the setup is complete, you can start the agent server and the chat app loc
 uv run start-app
 ```
 
-This will start the agent server and the chat app at http://localhost:8000.
+This will start the agent server and the chat app at <http://localhost:8000>.
 
 **Next steps**: see [modifying your agent](#modifying-your-agent) to customize and iterate on the agent code.
 
@@ -51,9 +51,11 @@ This will start the agent server and the chat app at http://localhost:8000.
    - [`uv` installation docs](https://docs.astral.sh/uv/getting-started/installation/)
    - [`nvm` installation](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating)
      - Run the following to use Node 20 LTS:
+
        ```bash
        nvm use 20
        ```
+
    - [`databricks CLI` installation](https://docs.databricks.com/aws/en/dev-tools/cli/install)
 
 2. **Set up local authentication to Databricks**
@@ -114,7 +116,7 @@ This will start the agent server and the chat app at http://localhost:8000.
    uv run start-app
    ```
 
-   Query your agent via the UI (http://localhost:8000) or REST API:
+   Query your agent via the UI (<http://localhost:8000>) or REST API:
 
    **Advanced server options:**
 
@@ -125,12 +127,15 @@ This will start the agent server and the chat app at http://localhost:8000.
    ```
 
    - Example streaming request:
+
      ```bash
      curl -X POST http://localhost:8000/invocations \
      -H "Content-Type: application/json" \
      -d '{ "input": [{ "role": "user", "content": "hi" }], "stream": true }'
      ```
+
    - Example non-streaming request:
+
      ```bash
      curl -X POST http://localhost:8000/invocations  \
      -H "Content-Type: application/json" \
