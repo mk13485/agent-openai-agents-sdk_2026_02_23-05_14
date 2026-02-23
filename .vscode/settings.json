@@ -3,5 +3,16 @@
     "colab.serverMounting": true,
     "colab.terminal": true,
     "colab.uploading": true,
-    "chat.experimental.useSkillAdherencePrompt": true
+    "chat.experimental.useSkillAdherencePrompt": true,
+    "workbench.editor.autoLockGroups": {
+        "default": true,
+        "workbench.editorinputs.searchEditorInput": true,
+        "copilot-chat-replay": true,
+        "workbench.input.interactive": true,
+        "mainThreadWebview-markdown.preview": true,
+        "luna.editor": true,
+        "hediet.vscode-drawio-text": true,
+        "jsProfileVisualizer.heapsnapshot.table": true,
+        "jsProfileVisualizer.cpuprofile.table": true
+    }
 }
