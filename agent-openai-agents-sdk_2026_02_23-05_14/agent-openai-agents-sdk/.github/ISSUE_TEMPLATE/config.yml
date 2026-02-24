@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security reports
+    url: https://github.com/robert2687/agent-openai-agents-sdk_2026_02_23-05_14/blob/main/agent-openai-agents-sdk/SECURITY.md
+    about: Review the security policy and report vulnerabilities responsibly.
+  - name: Documentation
+    url: https://github.com/robert2687/agent-openai-agents-sdk_2026_02_23-05_14/tree/main/agent-openai-agents-sdk
+    about: Review the architecture, deployment, and training docs.
+  - name: Questions & support
+    url: https://github.com/robert2687/agent-openai-agents-sdk_2026_02_23-05_14/issues
+    about: Please search existing issues before opening a new one.
