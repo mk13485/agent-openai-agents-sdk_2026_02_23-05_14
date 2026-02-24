@@ -11,6 +11,7 @@
 **Purpose:** Define quantitative metrics and QA processes to ensure quality, accuracy, safety, and compliance.
 
 **Metrics organized by:**
+
 1. **Performance:** Speed, throughput, latency.
 2. **Quality:** Correctness, usability, hallucination rate.
 3. **Safety:** Security flags, license violations, PII leakage.
@@ -25,11 +26,13 @@
 **Metric:** P50, P95, P99 latency (milliseconds)
 
 **Target:**
+
 - P50: <100 ms
 - P95: <500 ms
 - P99: <2000 ms
 
 **Measurement:**
+
 ```python
 # telemetry/metrics.py
 from prometheus_client import Histogram
@@ -50,6 +53,7 @@ async def get_suggestions(req: CompletionRequest):
 ```
 
 **Dashboard:**
+
 - Latency histogram updated real-time.
 - Alert if P95 >1000 ms (regression).
 - Breakdown by model (fast 6B vs others).
@@ -64,10 +68,12 @@ async def get_suggestions(req: CompletionRequest):
 **Metric:** Task completion time (seconds)
 
 **Target:**
+
 - Plan generation: <5 seconds
 - Full task execution: <30 seconds (median)
 
 **Measurement:**
+
 ```python
 agentic_task_time = Histogram(
     'task_execution_time_sec',
@@ -102,10 +108,12 @@ async def execute_task(task_desc: str):
 **Metric:** Requests per second (RPS)
 
 **Target:**
+
 - Peak RPS: 1000+ (w/ autoscaling)
 - p95 response time @ 1000 RPS: <2000 ms
 
 **Measurement (via load test):**
+
 ```bash
 # benchmark/load_test.py
 import locust
@@ -140,11 +148,13 @@ class CompletionTest(HttpUser):
 **Target:** ≥70%
 
 **Formula:**
-```
+
+```text
 acceptance_rate = accepted_count / total_suggestions_shown
 ```
 
 **Measurement:**
+
 ```python
 def log_completion(event):
     telemetry.insert({
@@ -174,6 +184,7 @@ async def accept_suggestion(suggestion_id: str):
 ```
 
 **Breakdown:**
+
 - By language (Python, JS, Go)
 - By context level (local-only, partial, full)
 - By suggestion rank (1st vs 3rd suggestion bias?)
@@ -192,6 +203,7 @@ async def accept_suggestion(suggestion_id: str):
 **Target:** ≥90%
 
 **Measurement:**
+
 ```python
 def log_task_execution(task_id: str, result: dict):
     """Log task execution result."""
@@ -216,10 +228,12 @@ def log_task_execution(task_id: str, result: dict):
 ```
 
 **Failure analysis:**
+
 - If test pass rate drops below 85%, investigate model drift.
 - Sample 10 failures, manually review (hallucination, logic error?).
 
-**Dashboard:** 
+**Dashboard:**
+
 - Running average (7d window).
 - Per-task breakdown (which tasks fail most?).
 - Alert if <85% for 24 hours.
@@ -236,6 +250,7 @@ def log_task_execution(task_id: str, result: dict):
 **Target:** <5%
 
 **Definition:**
+
 - Syntax error (doesn't compile).
 - Wrong function/module name (API doesn't exist).
 - Incorrect argument types.
@@ -244,7 +259,8 @@ def log_task_execution(task_id: str, result: dict):
 **Measurement (Red-Teaming Panel):**
 
 Weekly QA review:
-```
+
+```text
 1. Sample 50 random completions from past week (high confidence only).
 2. Code reviewer: Does it have obvious errors? (Binary: Y/N)
 3. If Yes, categorize: syntax | API | logic | other
@@ -252,6 +268,7 @@ Weekly QA review:
 ```
 
 **Automated detection (MVP):**
+
 ```python
 def check_for_hallucinations(code: str, language: str) -> dict:
     """Quick heuristic checks for hallucinations."""
@@ -279,7 +296,8 @@ def check_for_hallucinations(code: str, language: str) -> dict:
     }
 ```
 
-**Dashboard:** 
+**Dashboard:**
+
 - Hallucination rate (weekly).
 - Breakdown by error type.
 - Alert if >5% for 7 days.
@@ -294,10 +312,12 @@ def check_for_hallucinations(code: str, language: str) -> dict:
 **Metric:** % of code that compiles without errors; % that passes linting
 
 **Target:**
+
 - Compilability: ≥95%
 - Passes linting: ≥90%
 
 **Measurement:**
+
 ```python
 async def verify_generated_code(code: str, language: str) -> dict:
     """Verify code quality before showing to user."""
@@ -335,7 +355,8 @@ def log_code_quality(code_id: str, verification: dict):
     metrics.gauge('code_lint_pass_rate', rate['lint_rate'])
 ```
 
-**Dashboard:** 
+**Dashboard:**
+
 - Compilability rate (7d average).
 - Lint pass rate (7d average).
 - Breakdown by language.
@@ -354,6 +375,7 @@ def log_code_quality(code_id: str, verification: dict):
 **Target:** 0 false negatives; <2% false positives
 
 **Definition:**
+
 - **Positive (should flag):** SQL injection risk, hardcoded API key, insecure deserialization, etc.
 - **False positive:** Legitimate code flagged incorrectly.
 
@@ -419,6 +441,7 @@ def log_security_check(suggestion_id: str, check_result: dict):
 ```
 
 **Dashboard:**
+
 - Security flag rate (should stay <2%).
 - Breakdown by flag type (injection, hardcoded secrets, etc.).
 - Alert if >3% or any "high severity" passes through.
@@ -435,6 +458,7 @@ def log_security_check(suggestion_id: str, check_result: dict):
 **Target:** 0 incidents per month
 
 **Detection:**
+
 ```python
 def detect_pii(code: str) -> list:
     """Detect PII patterns in code."""
@@ -483,6 +507,7 @@ async def safe_complete(req: CompletionRequest):
 ```
 
 **Dashboard:**
+
 - PII incidents (should be 0).
 - Breakdown by PII type.
 - Alert if >0 incidents (page on-call).
@@ -499,6 +524,7 @@ async def safe_complete(req: CompletionRequest):
 **Target:** <2% false positive rate; 0 missed viral licenses
 
 **Measurement:**
+
 ```python
 def check_license_match(code: str) -> dict:
     """Check if code matches known copyleft sources."""
@@ -546,6 +572,7 @@ def log_license_warnings():
 ```
 
 **Dashboard:**
+
 - License warning rate (<2% target).
 - Most common licenses detected.
 - Manual review: are warnings accurate?
@@ -561,11 +588,13 @@ def log_license_warnings():
 
 **Metric:** Daily / Weekly Active Users
 
-**Target:** 
+**Target:**
+
 - Week 1: 80% of pilot cohort (16–20 users).
 - Week 4: >90% regular use (>5 interactions/week).
 
 **Measurement:**
+
 ```python
 def count_active_users(window_days: int = 1):
     active_users = db.query(f"""
@@ -601,6 +630,7 @@ def report_dau_wau():
 **Target:** ≤3 days
 
 **Measurement:**
+
 ```python
 def calculate_ttfa(user_id: str):
     """Time to first acceptance."""
@@ -652,6 +682,7 @@ def analyze_ttfa_distribution():
 **Target:** ≤2% month-on-month regression
 
 **Measurement:**
+
 ```python
 def detect_acceptance_drift():
     """Detect acceptance rate regression."""
@@ -694,6 +725,7 @@ def detect_acceptance_drift():
 **Target:** <20% month-on-month increase
 
 **Measurement:**
+
 ```python
 def detect_latency_drift():
     """Detect latency regression."""
@@ -733,6 +765,7 @@ def detect_latency_drift():
 ### Unit Test Coverage (Generated Code)
 
 **Before each release:**
+
 ```python
 # tests/test_generated_code.py
 import pytest
@@ -763,6 +796,7 @@ def test_generated_code_samples():
 ```
 
 **Acceptance Criteria:**
+
 - ✅ 98+ / 100 compile successfully.
 - ✅ 90+ / 100 pass linting.
 - ✅ 0 security flags.
@@ -822,7 +856,8 @@ def test_adversarial_prompts():
 ### Manual Code Review (Acceptance Panel)
 
 **Weekly:**
-```
+
+```text
 1. Sample 50 high-confidence (>0.8) completions from last week.
 2. Present to code reviewers (3 engineers).
 3. Each reviewer scores: Not Useful (0) | Somewhat Useful (1) | Very Useful (2)
@@ -831,7 +866,8 @@ def test_adversarial_prompts():
 ```
 
 **Scorecards:**
-```
+
+```text
 Reviewer: @alice
 Scores: [2, 2, 1, 2, 0, 1, 2, 2, 2, 1, ...] (50 total)
 Mean: 1.58 / 2.0 ✅ Pass
@@ -906,7 +942,7 @@ dashboard:
 **Go/No-Go Decision (Month 6):**
 
 | Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
+| ------ | ------ | ------ | ------ |
 | Acceptance rate (completions) | ≥70% | ___ | ☐ |
 | Task test pass rate | ≥85% | ___ | ☐ |
 | P95 latency (completions) | <500ms | ___ | ☐ |
@@ -917,6 +953,7 @@ dashboard:
 | GDPR compliance audit | Pass | ___ | ☐ |
 
 **Decision:**
+
 - **All green:** ✅ Approved for production scale (Q3 2026).
 - **1–2 red:** ⚠️ Extend pilot 2 weeks, retin model, retest.
 - **3+ red:** ❌ Halt, investigate root cause, redesign as needed.
@@ -928,7 +965,7 @@ dashboard:
 ### Alert Routing
 
 | Metric | Threshold | Severity | On-Call |
-|--------|-----------|----------|---------|
+| ------- | --------- | -------- | ------- |
 | Acceptance rate drops | <60% | High | ML Lead |
 | P95 latency >2000ms | Sustained 1h | Medium | ML Ops |
 | Security flags spike | >10%/day | Critical | Security |
@@ -964,13 +1001,12 @@ dashboard:
 
 ## References
 
-- OpenAI Codex evaluation studies: https://arxiv.org/abs/2107.03374
-- GitHub Copilot research: https://github.blog/2023-03-16-github-copilot-research-recitation/
-- GDPR compliance metrics: https://gdpr-info.eu/
+- OpenAI Codex evaluation studies: <https://arxiv.org/abs/2107.03374>
+- GitHub Copilot research: <https://github.blog/2023-03-16-github-copilot-research-recitation/>
+- GDPR compliance metrics: <https://gdpr-info.eu/>
 
 ---
 
 **Owner:** ML/Data Team  
 **Last Updated:** 23 Feb 2026  
 **Next Review:** 30 April 2026 (post-pilot)
-
