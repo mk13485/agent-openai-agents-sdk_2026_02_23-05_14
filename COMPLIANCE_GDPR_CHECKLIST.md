@@ -14,14 +14,17 @@
 - ✅ **Databricks workspace location:** eu-west-1 (Ireland, EU).
 - ✅ **Data Processing Agreement signed:** Databricks EU DPA + SCCs.
 - ✅ **Sub-processors approved:**
+
   | Service | Location | DPA? | Alternative |
-  |---------|----------|------|-------------|
+  | ------- | -------- | ---- | ----------- |
   | Databricks | EU (Ireland) | ✅ Signed | N/A |
   | Redis (managed) | EU (Ireland) | ✅ Databricks covers | Self-host in EU |
   | Vector DB (Pinecone) | EU region (Frankfurt) | ⏳ In review | Weaviate/Qdrant self-hosted in EU |
   | GitHub API (PR creation) | US | ✅ SCCs + Standard Contractual Clauses | GitLab (EU) alternative |
 
+
 **Action Items:**
+
 - [ ] Confirm Pinecone EU region available (sign DPA).
 - [ ] If Pinecone unavailable, provision self-hosted Qdrant in EU.
 - [ ] Document all data flows in system architecture diagram.
@@ -39,6 +42,7 @@
 **What:** User can request all personal data held about them.
 
 **Implementation:**
+
 ```python
 # app_server/gdpr.py
 class GDPRController:
@@ -82,6 +86,7 @@ class GDPRController:
 
 **Timeline:** Respond within 30 days (GDPR requirement).
 
+
 - [ ] Implement /api/v1/gdpr/access-request endpoint.
 - [ ] Test: request data, verify completeness within 48 hours.
 
@@ -94,6 +99,7 @@ class GDPRController:
 **What:** User can request deletion of their personal data (exceptions: legal obligation, etc.).
 
 **Implementation:**
+
 ```python
 # app_server/gdpr.py
 @app.post("/api/v1/gdpr/deletion-request")
@@ -143,6 +149,7 @@ async def delete_user_data(user_id: str):
 
 **Timeline:** Soft delete within 30 days; hard delete within 60 days.
 
+
 - [ ] Implement /api/v1/gdpr/deletion-request endpoint.
 - [ ] Verify soft-delete doesn't affect business/audit logs.
 - [ ] Schedule hard-delete job (cron, tested).
@@ -156,6 +163,7 @@ async def delete_user_data(user_id: str):
 **What:** User can request their data in portable format (JSON, CSV).
 
 **Implementation:**
+
 ```python
 @app.post("/api/v1/gdpr/portability-request")
 async def request_portability(format: str = "json", user = Depends(get_current_user)):
@@ -186,6 +194,7 @@ async def request_portability(format: str = "json", user = Depends(get_current_u
         )
 ```
 
+
 - [ ] Export endpoints tested (JSON, CSV).
 - [ ] Verify data format is machine-readable & complete.
 
@@ -198,7 +207,8 @@ async def request_portability(format: str = "json", user = Depends(get_current_u
 **What:** User can opt-out of training their data being used to improve the model.
 
 **Checkbox in UI:**
-```
+
+```text
 Privacy Settings
 ━━━━━━━━━━━━━━━━━━━━━━━
 ☑ Allow training on my code (improves model)
@@ -212,6 +222,7 @@ Privacy Settings
 ```
 
 **Implementation:**
+
 ```python
 class ConsentManager:
     def set_training_consent(self, user_id: str, enabled: bool):
@@ -240,6 +251,7 @@ class ConsentManager:
 ### Privacy Policy & Terms
 
 **Must include:**
+
 - ✅ What data is collected? (completions, telemetry, code snippets)
 - ✅ Why? (model improvement, debugging, safety)
 - ✅ Who has access? (ML team for training, Security for audits)
@@ -248,6 +260,7 @@ class ConsentManager:
 - ✅ Sub-processor list
 
 **Annual review:** ✅ Yes, required under GDPR.
+
 
 - [ ] Privacy policy drafted by Legal.
 - [ ] Published on company website.
@@ -263,7 +276,8 @@ class ConsentManager:
 **When:** Training on private repo code requires explicit org-level consent.
 
 **Form:**
-```
+
+```text
 Organization Training Consent
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 By enabling training, you allow the Copilot Coding Agent to use 
@@ -283,6 +297,7 @@ Your data will:
 ```
 
 **Implementation:**
+
 ```python
 class OrganizationConsent:
     def get_consent_status(self, org_id: str) -> bool:
@@ -311,6 +326,7 @@ class OrganizationConsent:
         })
 ```
 
+
 - [ ] Consent form UI implemented.
 - [ ] Org admin can sign digitally.
 - [ ] Audit trail maintained.
@@ -326,6 +342,7 @@ class OrganizationConsent:
 **Requirement:** AES-256 encryption for all PII / code data.
 
 **Implementation:**
+
 ```python
 # app_server/encryption.py
 from cryptography.fernet import Fernet
@@ -353,6 +370,7 @@ telemetry = {
 }
 ```
 
+
 - [ ] Encryption key stored in Databricks secrets (never in code).
 - [ ] All code/PII fields encrypted in DB.
 - [ ] Test: verify encrypted data unreadable without key.
@@ -366,6 +384,7 @@ telemetry = {
 **Requirement:** TLS 1.3, perfect forward secrecy.
 
 **Implementation:**
+
 ```yaml
 # app_server/nginx.conf (reverse proxy)
 ssl_protocols TLSv1.3;
@@ -377,6 +396,7 @@ ssl_session_timeout 24h;
 # HSTS: force HTTPS for 1 year
 add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 ```
+
 
 - [ ] TLS 1.3 enforced.
 - [ ] Certificate valid (Let's Encrypt auto-renewal).
@@ -391,6 +411,7 @@ add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" alway
 ### Audit Log Requirements
 
 **Must log:**
+
 - User authentication (login, logout, token refresh).
 - Data access (query for user data, export).
 - Authorization changes (consent toggles, permission grants).
@@ -398,6 +419,7 @@ add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" alway
 - Security events (failed login, redaction triggered, unsafe code detected).
 
 **Example log entry:**
+
 ```json
 {
   "timestamp": "2026-02-23T09:30:00Z",
@@ -415,6 +437,7 @@ add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" alway
 
 **Retention:** 7 years (for compliance audits).
 
+
 - [ ] Audit logging module implemented.
 - [ ] All events logged with timestamp, user, action.
 - [ ] Read-only audit table (prevent tampering).
@@ -426,6 +449,7 @@ add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" alway
 ### Compliance Reports (Automated)
 
 **Monthly GDPR report:**
+
 ```python
 # compliance/gdpr_report.py
 def generate_gdpr_report(month: int, year: int) -> dict:
@@ -448,6 +472,7 @@ def generate_gdpr_report(month: int, year: int) -> dict:
     return report
 ```
 
+
 - [ ] Report auto-generated monthly.
 - [ ] Sent to Data Protection Officer.
 - [ ] Shared with CTO/Legal monthly.
@@ -463,26 +488,31 @@ def generate_gdpr_report(month: int, year: int) -> dict:
 **If breach detected:**
 
 1. **Within 24 hours:**
+
    - [ ] Incident response team activated.
    - [ ] Scope assessed (how much data? whose?)
    - [ ] Immediate mitigation (isolate affected systems).
 
 2. **Within 72 hours (GDPR requirement):**
+
    - [ ] Notify Data Protection Officer.
    - [ ] Notify affected users (if high risk).
    - [ ] File report with Slovak Data Protection Authority (UDOP).
 
 3. **Within 30 days:**
+
    - [ ] Full incident report published.
    - [ ] Remediation steps documented.
    - [ ] Post-mortem completed.
 
 **Contact info:**
+
 | Role | Name | Email | On-Call? |
-|------|------|-------|---------|
-| Data Protection Officer | [NAME] | dpo@company.com | ✅ 24/7 |
-| Security Lead | [NAME] | security@company.com | ✅ 24/7 |
-| Legal Counsel | [NAME] | legal@company.com | Business hrs |
+| ---- | ---- | ----- | ------- |
+| Data Protection Officer | [NAME] | <dpo@company.com> | ✅ 24/7 |
+| Security Lead | [NAME] | <security@company.com> | ✅ 24/7 |
+| Legal Counsel | [NAME] | <legal@company.com> | Business hrs |
+
 
 - [ ] Incident response playbook drafted.
 - [ ] On-call rotation set up.
@@ -497,6 +527,7 @@ def generate_gdpr_report(month: int, year: int) -> dict:
 ### Sub-Processor Audit
 
 **Databricks (model serving, inference):**
+
 - [ ] DPA signed? ✅ Yes
 - [ ] SOC 2 Type II? ✅ Yes
 - [ ] Data location? EU (Ireland)
@@ -504,11 +535,13 @@ def generate_gdpr_report(month: int, year: int) -> dict:
 - [ ] Audit frequency? Annual external audit
 
 **Vector DB (Pinecone or Qdrant):**
+
 - [ ] EU region available? ⏳ Confirm
 - [ ] DPA signed? ⏳ Pending
 - [ ] Data location? EU (to be confirmed)
 
 **GitHub (PR creation):**
+
 - [ ] Location? US (requires SCCs)
 - [ ] SCCs signed? ⏳ Pending
 - [ ] Data minimization? Only repo name, PR title (no code)
@@ -543,6 +576,7 @@ def approve_new_processor(vendor_name: str, purpose: str, location: str):
     })
 ```
 
+
 - [ ] Vendor approval process defined.
 - [ ] DPA template available for new vendors.
 - [ ] Annual vendor audit schedule set.
@@ -556,15 +590,18 @@ def approve_new_processor(vendor_name: str, purpose: str, location: str):
 ### Vulnerability Scanning
 
 **Automated SAST (Static Analysis):**
+
 - [ ] Setup GitHub advanced security / SonarQube.
 - [ ] Scan on every PR -> block if critical vulns.
 
 **Dependency scanning:**
+
 - [ ] Setup Dependabot / Snyk.
 - [ ] Auto-patch low-risk updates.
 - [ ] Alert on high-risk vulns.
 
 **Container scanning:**
+
 - [ ] Scan Docker image for vulns → Aqua / Trivy.
 - [ ] Only deploy images with 0 critical vulns.
 
@@ -581,6 +618,7 @@ def approve_new_processor(vendor_name: str, purpose: str, location: str):
 **Schedule:** Annual (first: Month 6+1 = Month 7).
 
 **Scope:**
+
 - App Server API (auth bypass, injection attacks).
 - IDE plugin (supply chain, phishing).
 - Data stores (encryption, access control).
@@ -668,13 +706,15 @@ def approve_new_processor(vendor_name: str, purpose: str, location: str):
 **Compliance Review Board:**
 
 | Role | Name | Date | Sign |
-|------|------|------|------|
+| ---- | ---- | ---- | ---- |
 | Data Protection Officer | __________ | _____ | _____ |
 | Legal Counsel | __________ | _____ | _____ |
 | Security Lead | __________ | _____ | _____ |
 | CTO | __________ | _____ | _____ |
 
-**Approved for:  ☐ Pilot (Month 1)    ☐ Production (Q3 2026)**
+### Approval Status
+
+Approved for: ☐ Pilot (Month 1) ☐ Production (Q3 2026)
 
 ---
 
