@@ -22,7 +22,6 @@
   | Vector DB (Pinecone) | EU region (Frankfurt) | ⏳ In review | Weaviate/Qdrant self-hosted in EU |
   | GitHub API (PR creation) | US | ✅ SCCs + Standard Contractual Clauses | GitLab (EU) alternative |
 
-
 **Action Items:**
 
 - [ ] Confirm Pinecone EU region available (sign DPA).
@@ -86,7 +85,6 @@ class GDPRController:
 
 **Timeline:** Respond within 30 days (GDPR requirement).
 
-
 - [ ] Implement /api/v1/gdpr/access-request endpoint.
 - [ ] Test: request data, verify completeness within 48 hours.
 
@@ -149,7 +147,6 @@ async def delete_user_data(user_id: str):
 
 **Timeline:** Soft delete within 30 days; hard delete within 60 days.
 
-
 - [ ] Implement /api/v1/gdpr/deletion-request endpoint.
 - [ ] Verify soft-delete doesn't affect business/audit logs.
 - [ ] Schedule hard-delete job (cron, tested).
@@ -193,7 +190,6 @@ async def request_portability(format: str = "json", user = Depends(get_current_u
             media_type="application/zip"
         )
 ```
-
 
 - [ ] Export endpoints tested (JSON, CSV).
 - [ ] Verify data format is machine-readable & complete.
@@ -261,7 +257,6 @@ class ConsentManager:
 
 **Annual review:** ✅ Yes, required under GDPR.
 
-
 - [ ] Privacy policy drafted by Legal.
 - [ ] Published on company website.
 - [ ] Users must click "Accept" before using tool.
@@ -326,7 +321,6 @@ class OrganizationConsent:
         })
 ```
 
-
 - [ ] Consent form UI implemented.
 - [ ] Org admin can sign digitally.
 - [ ] Audit trail maintained.
@@ -370,7 +364,6 @@ telemetry = {
 }
 ```
 
-
 - [ ] Encryption key stored in Databricks secrets (never in code).
 - [ ] All code/PII fields encrypted in DB.
 - [ ] Test: verify encrypted data unreadable without key.
@@ -396,7 +389,6 @@ ssl_session_timeout 24h;
 # HSTS: force HTTPS for 1 year
 add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 ```
-
 
 - [ ] TLS 1.3 enforced.
 - [ ] Certificate valid (Let's Encrypt auto-renewal).
@@ -437,7 +429,6 @@ add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" alway
 
 **Retention:** 7 years (for compliance audits).
 
-
 - [ ] Audit logging module implemented.
 - [ ] All events logged with timestamp, user, action.
 - [ ] Read-only audit table (prevent tampering).
@@ -471,7 +462,6 @@ def generate_gdpr_report(month: int, year: int) -> dict:
     
     return report
 ```
-
 
 - [ ] Report auto-generated monthly.
 - [ ] Sent to Data Protection Officer.
@@ -512,7 +502,6 @@ def generate_gdpr_report(month: int, year: int) -> dict:
 | Data Protection Officer | [NAME] | <dpo@company.com> | ✅ 24/7 |
 | Security Lead | [NAME] | <security@company.com> | ✅ 24/7 |
 | Legal Counsel | [NAME] | <legal@company.com> | Business hrs |
-
 
 - [ ] Incident response playbook drafted.
 - [ ] On-call rotation set up.
@@ -575,7 +564,6 @@ def approve_new_processor(vendor_name: str, purpose: str, location: str):
         "timestamp": now()
     })
 ```
-
 
 - [ ] Vendor approval process defined.
 - [ ] DPA template available for new vendors.
@@ -720,4 +708,3 @@ Approved for: ☐ Pilot (Month 1) ☐ Production (Q3 2026)
 
 **Last Updated:** 23 Feb 2026  
 **Next Review:** 30 April 2026 (post-pilot)
-
