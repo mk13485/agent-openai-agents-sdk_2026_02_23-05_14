@@ -33,6 +33,30 @@ This script will:
 uv run quickstart
 ```
 
+### Extension-like local mode (no Databricks auth)
+
+If you want this to behave more like a local extension (just API key + run), you can use OpenAI mode:
+
+```bash
+cp .env.example .env
+```
+
+Then set the following in `.env`:
+
+```bash
+AGENT_BACKEND=openai
+OPENAI_API_KEY=<your-key>
+AGENT_MODEL=gpt-4.1-mini
+```
+
+Then run:
+
+```bash
+uv run start-server --reload
+# or full UI + backend:
+uv run start-app
+```
+
 After the setup is complete, you can start the agent server and the chat app locally with:
 
 ```bash
