@@ -70,9 +70,7 @@ async def invoke_handler(request: ResponsesAgentRequest) -> ResponsesAgentRespon
     messages = [i.model_dump() for i in request.input]
 
     if USE_DATABRICKS:
-        workspace_client = WorkspaceClient()
-        # Optionally use the user's workspace client for on-behalf-of authentication
-        # user_workspace_client = get_user_workspace_client()
+        workspace_client = get_user_workspace_client() or WorkspaceClient()
         async with await init_mcp_server(workspace_client) as mcp_server:
             agent = create_coding_agent(mcp_server)
             result = await Runner.run(agent, messages)
@@ -88,9 +86,7 @@ async def stream_handler(request: dict) -> AsyncGenerator[ResponsesAgentStreamEv
     messages = [i.model_dump() for i in request.input]
 
     if USE_DATABRICKS:
-        workspace_client = WorkspaceClient()
-        # Optionally use the user's workspace client for on-behalf-of authentication
-        # user_workspace_client = get_user_workspace_client()
+        workspace_client = get_user_workspace_client() or WorkspaceClient()
         async with await init_mcp_server(workspace_client) as mcp_server:
             agent = create_coding_agent(mcp_server)
             result = Runner.run_streamed(agent, input=messages)
