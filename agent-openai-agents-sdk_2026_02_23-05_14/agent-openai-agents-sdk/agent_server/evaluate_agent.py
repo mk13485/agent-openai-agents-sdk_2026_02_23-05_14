@@ -25,7 +25,59 @@ eval_dataset = [
             }
         },
         "expected_response": "The 15th Fibonacci number is 610.",
-    }
+    },
+    {
+        "inputs": {
+            "request": {
+                "input": [
+                    {
+                        "role": "user",
+                        "content": "Fix this Python bug: `def is_even(n): return n % 2`",
+                    }
+                ]
+            }
+        },
+        "expected_response": "Should return a boolean like `return n % 2 == 0`.",
+    },
+    {
+        "inputs": {
+            "request": {
+                "input": [
+                    {
+                        "role": "user",
+                        "content": "Refactor this to be clearer: `result=[]\nfor x in nums:\n if x>10: result.append(x*2)`",
+                    }
+                ]
+            }
+        },
+        "expected_response": "Use a readable comprehension: `[x * 2 for x in nums if x > 10]`.",
+    },
+    {
+        "inputs": {
+            "request": {
+                "input": [
+                    {
+                        "role": "user",
+                        "content": "Give a minimal FastAPI endpoint with path `/health` returning JSON status.",
+                    }
+                ]
+            }
+        },
+        "expected_response": "Includes a FastAPI route that returns a status dictionary.",
+    },
+    {
+        "inputs": {
+            "request": {
+                "input": [
+                    {
+                        "role": "user",
+                        "content": "I get `ModuleNotFoundError: requests`. What should I do?",
+                    }
+                ]
+            }
+        },
+        "expected_response": "Recommend installing requests in the active environment and verifying interpreter selection.",
+    },
 ]
 
 # Get the invoke function that was registered via @invoke decorator in your agent
