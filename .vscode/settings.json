@@ -48,5 +48,6 @@
     "chat.unifiedAgentsBar.enabled": true,
     "chat.editing.explainChanges.enabled": true,
     "chat.checkpoints.showFileChanges": true,
-    "chat.agent.networkFilter": true
+    "chat.agent.networkFilter": true,
+    "chat.permissions.default": "autopilot"
 }
