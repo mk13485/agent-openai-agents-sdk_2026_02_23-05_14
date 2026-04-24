@@ -30,5 +30,23 @@
     "jupyter.logKernelOutputSeparately": true,
     "jupyter.showVariableViewWhenDebugging": true,
     "jupyter.themeMatplotlibPlots": true,
-    "jupyter.interactiveWindow.notebookRepl": true
+    "jupyter.interactiveWindow.notebookRepl": true,
+    "chat.allowAnonymousAccess": true,
+    "inlineChat.notebookAgent": true,
+    "chat.useNestedAgentsMdFiles": true,
+    "chat.mcp.assisted.nuget.enabled": true,
+    "chat.mcp.discovery.enabled": {
+        "windsurf": true,
+        "cursor-global": true,
+        "cursor-workspace": true,
+        "claude-desktop": true
+    },
+    "chat.tools.terminal.ignoreDefaultAutoApproveRules": true,
+    "chat.exitAfterDelegation": false,
+    "chat.viewProgressBadge.enabled": true,
+    "chat.restoreLastPanelSession": true,
+    "chat.unifiedAgentsBar.enabled": true,
+    "chat.editing.explainChanges.enabled": true,
+    "chat.checkpoints.showFileChanges": true,
+    "chat.agent.networkFilter": true
 }
