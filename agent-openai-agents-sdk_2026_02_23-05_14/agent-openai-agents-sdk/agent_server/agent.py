@@ -35,7 +35,8 @@ MODEL = os.getenv(
     "AGENT_MODEL",
     "databricks-gpt-5-2" if USE_DATABRICKS else "gpt-4.1-mini",
 )
-FALLBACK_MODEL = os.getenv("AGENT_FALLBACK_MODEL", "").strip()
+DEFAULT_FALLBACK_MODEL = "databricks-gpt-5-2" if USE_DATABRICKS else "gpt-4.1"
+FALLBACK_MODEL = os.getenv("AGENT_FALLBACK_MODEL", DEFAULT_FALLBACK_MODEL).strip()
 
 
 def _read_int_env(name: str, default: int) -> int:
@@ -52,8 +53,8 @@ def _read_float_env(name: str, default: float) -> float:
         return default
 
 
-MAX_RETRIES = max(1, _read_int_env("AGENT_MAX_RETRIES", 2))
-RETRY_BASE_SECONDS = max(0.1, _read_float_env("AGENT_RETRY_BASE_SECONDS", 1.0))
+MAX_RETRIES = max(1, _read_int_env("AGENT_MAX_RETRIES", 3))
+RETRY_BASE_SECONDS = max(0.1, _read_float_env("AGENT_RETRY_BASE_SECONDS", 1.5))
 LOGGER = logging.getLogger(__name__)
 MEMORY_STORE = build_memory_store()
 DEFAULT_MEMORY_TENANT = os.getenv("AGENT_MEMORY_TENANT", "default-tenant")
