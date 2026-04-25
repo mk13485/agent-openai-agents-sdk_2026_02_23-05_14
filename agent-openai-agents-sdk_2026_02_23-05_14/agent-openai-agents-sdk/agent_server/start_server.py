@@ -1,8 +1,9 @@
 import logging
+from contextlib import asynccontextmanager
 
 import os
-# Point mlflow at a local directory so it never tries to contact a remote tracking server
-os.environ.setdefault("MLFLOW_TRACKING_URI", "mlruns")
+# Default to local SQLite-backed MLflow tracking to avoid deprecated file store.
+os.environ.setdefault("MLFLOW_TRACKING_URI", "sqlite:///mlflow.db")
 
 from dotenv import load_dotenv
 from mlflow.genai.agent_server import AgentServer, setup_mlflow_git_based_version_tracking
@@ -21,8 +22,8 @@ setup_mlflow_git_based_version_tracking()
 LOGGER = logging.getLogger(__name__)
 
 
-@app.on_event("startup")
-async def log_startup_banner() -> None:
+@asynccontextmanager
+async def _lifespan(_app):
     LOGGER.warning(
         "Agent startup | backend=%s model=%s fallback_model=%s retries=%s base_retry_seconds=%s",
         agent_module.BACKEND,
@@ -31,6 +32,10 @@ async def log_startup_banner() -> None:
         agent_module.MAX_RETRIES,
         agent_module.RETRY_BASE_SECONDS,
     )
+    yield
+
+
+app.router.lifespan_context = _lifespan
 
 
 @app.get("/health")

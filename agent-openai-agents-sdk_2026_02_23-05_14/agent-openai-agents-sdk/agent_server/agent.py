@@ -5,8 +5,8 @@ import asyncio
 import logging
 from typing import AsyncGenerator
 
-# Point mlflow at a local directory before any mlflow import
-os.environ.setdefault("MLFLOW_TRACKING_URI", "mlruns")
+# Default to local SQLite-backed MLflow tracking before any mlflow import.
+os.environ.setdefault("MLFLOW_TRACKING_URI", "sqlite:///mlflow.db")
 
 from databricks.sdk import WorkspaceClient
 from openai import AsyncOpenAI
