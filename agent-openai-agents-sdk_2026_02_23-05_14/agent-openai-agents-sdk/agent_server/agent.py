@@ -252,9 +252,7 @@ async def invoke_handler(request: ResponsesAgentRequest) -> ResponsesAgentRespon
     messages = [i.model_dump() for i in request.input]
 
     if USE_DATABRICKS:
-        workspace_client = WorkspaceClient()
-        # Optionally use the user's workspace client for on-behalf-of authentication
-        # user_workspace_client = get_user_workspace_client()
+        workspace_client = get_user_workspace_client() or WorkspaceClient()
         async with await init_mcp_server(workspace_client) as mcp_server:
             result = await _run_with_retries(messages, mcp_server=mcp_server)
             output_items = sanitize_output_items(result.new_items)
@@ -272,9 +270,7 @@ async def stream_handler(request: dict) -> AsyncGenerator[ResponsesAgentStreamEv
     messages = [i.model_dump() for i in request.input]
 
     if USE_DATABRICKS:
-        workspace_client = WorkspaceClient()
-        # Optionally use the user's workspace client for on-behalf-of authentication
-        # user_workspace_client = get_user_workspace_client()
+        workspace_client = get_user_workspace_client() or WorkspaceClient()
         async with await init_mcp_server(workspace_client) as mcp_server:
             async for event in _stream_with_retries(messages, mcp_server=mcp_server):
                 yield event

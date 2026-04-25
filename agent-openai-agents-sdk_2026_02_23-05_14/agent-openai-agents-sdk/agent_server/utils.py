@@ -25,8 +25,17 @@ def build_mcp_url(path: str, workspace_client: WorkspaceClient | None = None) ->
     return f"{hostname}{path}"
 
 
-def get_user_workspace_client() -> WorkspaceClient:
+def get_user_workspace_client() -> Optional[WorkspaceClient]:
+    """Return a WorkspaceClient authenticated as the requesting user via OBO OAuth.
+
+    The Databricks Apps platform forwards the user's OAuth access token in the
+    ``x-forwarded-access-token`` request header.  When that header is absent
+    (e.g. during local development) ``None`` is returned so the caller can fall
+    back to the app service-principal credentials.
+    """
     token = get_request_headers().get("x-forwarded-access-token")
+    if not token:
+        return None
     return WorkspaceClient(token=token, auth_type="pat")
 
 
