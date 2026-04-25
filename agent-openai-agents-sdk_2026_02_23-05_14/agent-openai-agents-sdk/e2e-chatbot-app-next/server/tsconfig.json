@@ -1,9 +1,15 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "noEmit": true,
     "outDir": "./dist",
     "allowImportingTsExtensions": false
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

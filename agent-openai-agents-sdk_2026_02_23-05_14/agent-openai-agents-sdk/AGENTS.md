@@ -15,6 +15,7 @@
 **Then check authentication status by running `databricks auth profiles`.**
 
 This helps you understand:
+
 - Which Databricks profiles are configured
 - Whether authentication is already set up
 - Which profile to use for subsequent commands
@@ -51,7 +52,7 @@ Ask the user: "I see there's an existing app with the same name. Would you like 
 **Before executing any task, read the relevant skill file in `.claude/skills/`** - they contain tested commands, patterns, and troubleshooting steps.
 
 | Task | Skill | Path |
-|------|-------|------|
+| ------ | ------- | ------ |
 | Setup, auth, first-time | **quickstart** | `.claude/skills/quickstart/SKILL.md` |
 | Find tools/resources | **discover-tools** | `.claude/skills/discover-tools/SKILL.md` |
 | Deploy to Databricks | **deploy** | `.claude/skills/deploy/SKILL.md` |
@@ -66,7 +67,7 @@ Ask the user: "I see there's an existing app with the same name. Would you like 
 ## Quick Commands
 
 | Task | Command |
-|------|---------|
+| ------ | --------- |
 | Setup | `uv run quickstart` |
 | Discover tools | `uv run discover-tools` |
 | Run locally | `uv run start-app` |
@@ -78,7 +79,7 @@ Ask the user: "I see there's an existing app with the same name. Would you like 
 ## Key Files
 
 | File | Purpose |
-|------|---------|
+| ------ | --------- |
 | `agent_server/agent.py` | Agent logic, model, instructions, MCP servers |
 | `agent_server/start_server.py` | FastAPI server + MLflow setup |
 | `agent_server/evaluate_agent.py` | Agent evaluation with MLflow scorers |
@@ -93,17 +94,20 @@ Ask the user: "I see there's an existing app with the same name. Would you like 
 > **⚠️ IMPORTANT:** When adding any tool to the agent, you MUST also grant permissions in `databricks.yml`. See the **add-tools** skill for required steps and examples.
 
 **Tool Types:**
+
 1. **Unity Catalog Function Tools** - SQL UDFs managed in UC with built-in governance
 2. **Agent Code Tools** - Defined directly in agent code for REST APIs and low-latency operations
 3. **MCP Tools** - Interoperable tools via Model Context Protocol (Databricks-managed, external, or self-hosted)
 
 **Built-in Tools:**
+
 - **system.ai.python_exec** - Execute Python code dynamically within agent queries (code interpreter)
 
 **Common Patterns:**
+
 - **Structured data retrieval** - Query SQL tables/databases
 - **Unstructured data retrieval** - Document search and RAG via Vector Search
 - **Code interpreter** - Python execution for analysis via system.ai.python_exec
 - **External connections** - Integrate services like Slack via HTTP connections
 
-Reference: https://docs.databricks.com/aws/en/generative-ai/agent-framework/
+Reference: <https://docs.databricks.com/aws/en/generative-ai/agent-framework/>
