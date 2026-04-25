@@ -1,5 +1,9 @@
 import logging
 
+import os
+# Point mlflow at a local directory so it never tries to contact a remote tracking server
+os.environ.setdefault("MLFLOW_TRACKING_URI", "mlruns")
+
 from dotenv import load_dotenv
 from mlflow.genai.agent_server import AgentServer, setup_mlflow_git_based_version_tracking
 

@@ -7,11 +7,11 @@ from .fallback_client import fallback_chat
 SYSTEM_PROMPT = Path(__file__).with_name("system_prompt.txt").read_text()
 
 TOOLS = {
-    "read_file": "agents.perfect_agent.tools.file:read_file",
-    "write_file": "agents.perfect_agent.tools.file:write_file",
-    "http_get": "agents.perfect_agent.tools.http:http_get",
-    "http_post": "agents.perfect_agent.tools.http:http_post",
-    "run_shell": "agents.perfect_agent.tools.shell:run",
+    "read_file": "local_agents.perfect_agent.tools.file:read_file",
+    "write_file": "local_agents.perfect_agent.tools.file:write_file",
+    "http_get": "local_agents.perfect_agent.tools.http:http_get",
+    "http_post": "local_agents.perfect_agent.tools.http:http_post",
+    "run_shell": "local_agents.perfect_agent.tools.shell:run",
 }
 
 

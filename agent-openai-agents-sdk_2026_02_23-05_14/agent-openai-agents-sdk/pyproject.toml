@@ -16,13 +16,12 @@ dependencies = [
     "pytest",
     "python-dotenv",
     "mlflow>=2.0",
-    "databricks-openai>=0.9.0",
-    "databricks-agents",
 ]
 
 [project.optional-dependencies]
 api = ["fastapi", "uvicorn"]
 ui = ["gradio"]
+databricks = ["databricks-openai>=0.9.0", "databricks-agents", "unitycatalog-openai[databricks]>=0.2.0"]
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]
@@ -36,7 +35,7 @@ dev = [
 
 
 [project.scripts]
-perfect-agent = "agents.perfect_agent.runner:main"
+perfect-agent = "local_agents.perfect_agent.runner:main"
 quickstart = "scripts.quickstart:main"
 verify-setup = "verify_setup:main"
 start-app = "scripts.start_app:main"
@@ -45,13 +44,13 @@ agent-evaluate = "agent_server.evaluate_agent:evaluate"
 discover-tools = "scripts.discover_tools:main"
 
 [tool.setuptools.package-data]
-"agents.perfect_agent" = ["system_prompt.txt"]
+"local_agents.perfect_agent" = ["system_prompt.txt"]
 
 [tool.setuptools]
 include-package-data = true
 
 [tool.setuptools.packages.find]
-include = ["agents*", "api*", "ui*"]
+include = ["local_agents*", "api*", "ui*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

@@ -1,7 +1,12 @@
+from __future__ import annotations
+
 import os
 import asyncio
 import logging
 from typing import AsyncGenerator
+
+# Point mlflow at a local directory before any mlflow import
+os.environ.setdefault("MLFLOW_TRACKING_URI", "mlruns")
 
 from databricks.sdk import WorkspaceClient
 from openai import AsyncOpenAI
@@ -9,8 +14,6 @@ from openai import AsyncOpenAI
 import mlflow
 from agents import Agent, Runner, set_default_openai_api, set_default_openai_client
 from agents.tracing import set_trace_processors
-from databricks_openai import AsyncDatabricksOpenAI
-from databricks_openai.agents import McpServer
 from mlflow.genai.agent_server import invoke, stream
 from mlflow.types.responses import (
     ResponsesAgentRequest,
@@ -37,6 +40,19 @@ MODEL = os.getenv(
 )
 DEFAULT_FALLBACK_MODEL = "databricks-gpt-5-2" if USE_DATABRICKS else "gpt-4.1"
 FALLBACK_MODEL = os.getenv("AGENT_FALLBACK_MODEL", DEFAULT_FALLBACK_MODEL).strip()
+
+
+def _load_databricks_openai():
+    try:
+        from databricks_openai import AsyncDatabricksOpenAI
+        from databricks_openai.agents import McpServer
+
+        return AsyncDatabricksOpenAI, McpServer
+    except ImportError as exc:  # pragma: no cover
+        raise RuntimeError(
+            "Databricks backend selected but databricks-openai is not installed. "
+            "Install optional Databricks dependencies to use AGENT_BACKEND=databricks."
+        ) from exc
 
 
 def _read_int_env(name: str, default: int) -> int:
@@ -73,6 +89,7 @@ Behavior requirements:
 
 # Databricks models are served via Chat Completions-compatible APIs.
 if USE_DATABRICKS:
+    AsyncDatabricksOpenAI, _ = _load_databricks_openai()
     set_default_openai_client(AsyncDatabricksOpenAI())
     set_default_openai_api("chat_completions")
 else:
@@ -82,10 +99,12 @@ else:
     set_default_openai_api("chat_completions")
 
 set_trace_processors([])  # only use mlflow for trace processing
-mlflow.openai.autolog()
+if os.getenv("AGENT_ENABLE_MLFLOW_AUTOLOG", "0") == "1":
+    mlflow.openai.autolog()
 
 
 async def init_mcp_server(workspace_client: WorkspaceClient | None = None):
+    _, McpServer = _load_databricks_openai()
     return McpServer(
         url=build_mcp_url("/api/2.0/mcp/functions/system/ai", workspace_client=workspace_client),
         name="system.ai UC function MCP server",
@@ -93,12 +112,12 @@ async def init_mcp_server(workspace_client: WorkspaceClient | None = None):
     )
 
 
-def create_coding_agent(mcp_server: McpServer | None = None) -> Agent:
+def create_coding_agent(mcp_server=None) -> Agent:
     mcp_servers = [mcp_server] if mcp_server else []
     return create_coding_agent_for_model(model=MODEL, mcp_server=mcp_server)
 
 
-def create_coding_agent_for_model(model: str, mcp_server: McpServer | None = None) -> Agent:
+def create_coding_agent_for_model(model: str, mcp_server=None) -> Agent:
     mcp_servers = [mcp_server] if mcp_server else []
     return Agent(
         name="Code execution agent",
@@ -115,7 +134,7 @@ def _candidate_models() -> list[str]:
     return candidates
 
 
-async def _run_with_retries(messages: list[dict], mcp_server: McpServer | None = None):
+async def _run_with_retries(messages: list[dict], mcp_server=None):
     last_error = None
     for model_idx, candidate_model in enumerate(_candidate_models(), start=1):
         agent = create_coding_agent_for_model(candidate_model, mcp_server=mcp_server)
@@ -149,7 +168,7 @@ async def _run_with_retries(messages: list[dict], mcp_server: McpServer | None =
 
 async def _stream_with_retries(
     messages: list[dict],
-    mcp_server: McpServer | None = None,
+    mcp_server=None,
 ) -> AsyncGenerator[ResponsesAgentStreamEvent, None]:
     last_error = None
     for model_idx, candidate_model in enumerate(_candidate_models(), start=1):

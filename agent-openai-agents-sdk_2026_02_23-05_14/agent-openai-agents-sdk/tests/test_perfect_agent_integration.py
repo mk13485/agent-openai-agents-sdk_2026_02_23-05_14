@@ -1,6 +1,6 @@
 import os
 import pytest
-from agents.perfect_agent.runner import chat_with_agent
+from local_agents.perfect_agent.runner import chat_with_agent
 
 
 @pytest.mark.skipif(

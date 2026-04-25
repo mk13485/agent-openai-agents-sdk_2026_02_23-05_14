@@ -1,5 +1,5 @@
 import gradio as gr
-from agents.perfect_agent.runner import chat_with_agent
+from local_agents.perfect_agent.runner import chat_with_agent
 
 
 def chat_fn(message, history):
