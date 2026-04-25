@@ -11,6 +11,17 @@ import sys
 from pathlib import Path
 
 
+def parse_env_file(env_path: Path) -> dict[str, str]:
+    values: dict[str, str] = {}
+    for line in env_path.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        values[key.strip()] = value.strip().strip('"').strip("'")
+    return values
+
+
 def check_command(cmd: str, name: str) -> bool:
     """Check if a command exists"""
     if shutil.which(cmd):
@@ -32,37 +43,38 @@ def check_command(cmd: str, name: str) -> bool:
         return False
 
 
-def check_env_file() -> bool:
-    """Check if .env file exists and has required variables"""
+def check_env_file() -> tuple[bool, str]:
+    """Check if .env file exists and has required variables for configured backend mode."""
     env_path = Path(".env")
     if not env_path.exists():
         print("✗ .env file not found")
-        return False
+        return False, "unknown"
 
     print("✓ .env file exists")
+    env_vars = parse_env_file(env_path)
+    backend = (env_vars.get("AGENT_BACKEND", "") or "").strip().lower()
+    if backend not in {"databricks", "openai"}:
+        backend = "openai" if env_vars.get("OPENAI_API_KEY") else "databricks"
 
-    # Check for required variables
-    required_vars = ["MLFLOW_EXPERIMENT_ID", "MLFLOW_TRACKING_URI"]
-    optional_vars = ["DATABRICKS_CONFIG_PROFILE", "DATABRICKS_HOST", "DATABRICKS_TOKEN"]
+    print(f"✓ Backend mode: {backend}")
 
-    with open(env_path) as f:
-        content = f.read()
-
-    missing_required = []
-    for var in required_vars:
-        if f"{var}=" not in content or f"{var}=\n" in content or f"{var}=" in content and content.split(f"{var}=")[1].split("\n")[0].strip() == "":
-            missing_required.append(var)
-
-    has_auth = any(f"{var}=" in content and content.split(f"{var}=")[1].split("\n")[0].strip() != ""
-                   for var in optional_vars)
-
+    required_vars = ["MLFLOW_TRACKING_URI"]
+    missing_required = [k for k in required_vars if not env_vars.get(k)]
     if missing_required:
         print(f"  ⚠ Missing or empty: {', '.join(missing_required)}")
 
+    if backend == "openai":
+        has_openai = bool(env_vars.get("OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY"))
+        if not has_openai:
+            print("  ⚠ OPENAI_API_KEY is missing (required for AGENT_BACKEND=openai)")
+        return len(missing_required) == 0 and has_openai, backend
+
+    optional_vars = ["DATABRICKS_CONFIG_PROFILE", "DATABRICKS_HOST", "DATABRICKS_TOKEN"]
+    has_auth = any(env_vars.get(var) for var in optional_vars)
     if not has_auth:
         print(f"  ⚠ No authentication configured (need one of: {', '.join(optional_vars)})")
 
-    return len(missing_required) == 0 and has_auth
+    return len(missing_required) == 0 and has_auth, backend
 
 
 def check_databricks_auth() -> bool:
@@ -141,12 +153,26 @@ def main():
     print()
 
     print("3. Checking configuration...")
-    checks.append(check_env_file())
+    env_ok, backend = check_env_file()
+    checks.append(env_ok)
     print()
 
-    print("4. Checking Databricks authentication...")
-    checks.append(check_databricks_auth())
-    print()
+    if backend == "databricks":
+        print("4. Checking Databricks authentication...")
+        checks.append(check_databricks_auth())
+        print()
+    else:
+        print("4. Checking OpenAI authentication...")
+        if os.getenv("OPENAI_API_KEY"):
+            print("✓ OPENAI_API_KEY available in environment")
+            checks.append(True)
+        else:
+            env_path = Path(".env")
+            env_vars = parse_env_file(env_path) if env_path.exists() else {}
+            has_key = bool(env_vars.get("OPENAI_API_KEY"))
+            checks.append(has_key)
+            print("✓ OPENAI_API_KEY configured" if has_key else "✗ OPENAI_API_KEY missing")
+        print()
 
     print("5. Checking Python dependencies...")
     checks.append(check_dependencies())

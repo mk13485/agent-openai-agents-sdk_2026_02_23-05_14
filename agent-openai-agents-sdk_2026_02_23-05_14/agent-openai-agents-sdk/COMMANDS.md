@@ -8,6 +8,10 @@ Quick reference for common commands when working with the Databricks OpenAI Agen
 # Initial setup (automated)
 uv run quickstart
 
+# Extension-like local mode (OpenAI)
+cp .env.example .env
+# edit .env: AGENT_BACKEND=openai + OPENAI_API_KEY=...
+
 # Verify setup is correct
 uv run verify-setup
 
@@ -30,6 +34,9 @@ uv run start-app
 
 # Start server only (development mode with hot-reload)
 uv run start-server --reload
+
+# Start in extension-like mode (if AGENT_BACKEND=openai is set)
+OPENAI_API_KEY=<your-key> AGENT_BACKEND=openai uv run start-server --reload
 
 # Start on custom port
 uv run start-server --port 8001

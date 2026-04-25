@@ -1,0 +1,19 @@
+env:
+  APP_NAME: "PERFECT-AGENT"
+  APP_URL: "https://github.com/robert2687"
+
+secrets:
+  openrouterApiKey: ""
+  openaiApiKey: ""
+
+service:
+  apiPort: 8000
+  uiPort: 7860
+
+image:
+  repository: your-registry/perfect-agent-api
+  tag: "1.0.0"
+
+uiImage:
+  repository: your-registry/perfect-agent-ui
+  tag: "1.0.0"

@@ -33,6 +33,60 @@ This script will:
 uv run quickstart
 ```
 
+### Extension-like local mode (no Databricks auth)
+
+If you want this to behave more like a local extension (just API key + run), you can use OpenAI mode:
+
+```bash
+cp .env.example .env
+```
+
+Then set the following in `.env`:
+
+```bash
+AGENT_BACKEND=openai
+OPENAI_API_KEY=<your-key>
+AGENT_MODEL=gpt-4.1-mini
+```
+
+Then run:
+
+```bash
+uv run start-server --reload
+# or full UI + backend:
+uv run start-app
+```
+
+### Reliability and model fallback
+
+You can configure retries and fallback model behavior:
+
+```bash
+AGENT_MODEL=gpt-4.1-mini
+AGENT_FALLBACK_MODEL=gpt-4.1
+AGENT_MAX_RETRIES=2
+AGENT_RETRY_BASE_SECONDS=1.0
+```
+
+At startup the server logs the active backend/model/fallback and retry settings.
+
+### Health endpoint
+
+The server exposes health metadata at:
+
+- `GET /health`
+
+Response includes current backend, model, fallback model, and retry settings.
+
+### Optional conversation memory backend
+
+The repository now includes an optional memory-store scaffold (`agent_server/memory_store.py`) with:
+
+- in-memory backend (default)
+- Azure Cosmos DB backend (optional)
+
+For Cosmos DB, use high-cardinality partitioning to isolate users/tenants and prevent hotspots (for example `tenantId#userId`).
+
 After the setup is complete, you can start the agent server and the chat app locally with:
 
 ```bash
