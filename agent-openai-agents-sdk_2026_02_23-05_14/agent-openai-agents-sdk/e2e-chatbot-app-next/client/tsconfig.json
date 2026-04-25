@@ -2,7 +2,11 @@
   "compilerOptions": {
     "target": "ES2022",
     "useDefineForClassFields": true,
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "skipLibCheck": true,
     "moduleResolution": "bundler",
@@ -15,18 +19,33 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@chat-template/db": ["../packages/db/src/index.ts"],
+      "@/*": [
+        "./src/*"
+      ],
+      "@chat-template/db": [
+        "../packages/db/src/index.ts"
+      ],
       "@chat-template/ai-sdk-providers": [
         "../packages/ai-sdk-providers/src/index.ts"
       ],
-      "@chat-template/auth": ["../packages/auth/src/index.ts"],
-      "@chat-template/core": ["../packages/core/src/index.ts"],
-      "@chat-template/core/errors": ["../packages/core/src/errors.ts"]
+      "@chat-template/auth": [
+        "../packages/auth/src/index.ts"
+      ],
+      "@chat-template/core": [
+        "../packages/core/src/index.ts"
+      ],
+      "@chat-template/core/errors": [
+        "../packages/core/src/errors.ts"
+      ]
     }
   },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": [
+    "src"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
 }

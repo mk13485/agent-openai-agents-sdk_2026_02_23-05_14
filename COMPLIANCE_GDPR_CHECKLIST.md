@@ -16,7 +16,7 @@
 - ✅ **Sub-processors approved:**
 
   | Service | Location | DPA? | Alternative |
-  | ------- | -------- | ---- | ----------- |
+  | --- | --- | --- | --- |
   | Databricks | EU (Ireland) | ✅ Signed | N/A |
   | Redis (managed) | EU (Ireland) | ✅ Databricks covers | Self-host in EU |
   | Vector DB (Pinecone) | EU region (Frankfurt) | ⏳ In review | Weaviate/Qdrant self-hosted in EU |
@@ -478,19 +478,16 @@ def generate_gdpr_report(month: int, year: int) -> dict:
 **If breach detected:**
 
 1. **Within 24 hours:**
-
    - [ ] Incident response team activated.
    - [ ] Scope assessed (how much data? whose?)
    - [ ] Immediate mitigation (isolate affected systems).
 
 2. **Within 72 hours (GDPR requirement):**
-
    - [ ] Notify Data Protection Officer.
    - [ ] Notify affected users (if high risk).
    - [ ] File report with Slovak Data Protection Authority (UDOP).
 
 3. **Within 30 days:**
-
    - [ ] Full incident report published.
    - [ ] Remediation steps documented.
    - [ ] Post-mortem completed.
@@ -498,7 +495,7 @@ def generate_gdpr_report(month: int, year: int) -> dict:
 **Contact info:**
 
 | Role | Name | Email | On-Call? |
-| ---- | ---- | ----- | ------- |
+| --- | --- | --- | --- |
 | Data Protection Officer | [NAME] | <dpo@company.com> | ✅ 24/7 |
 | Security Lead | [NAME] | <security@company.com> | ✅ 24/7 |
 | Legal Counsel | [NAME] | <legal@company.com> | Business hrs |
@@ -694,15 +691,15 @@ def approve_new_processor(vendor_name: str, purpose: str, location: str):
 **Compliance Review Board:**
 
 | Role | Name | Date | Sign |
-| ---- | ---- | ---- | ---- |
+| --- | --- | --- | --- |
 | Data Protection Officer | __________ | _____ | _____ |
 | Legal Counsel | __________ | _____ | _____ |
 | Security Lead | __________ | _____ | _____ |
 | CTO | __________ | _____ | _____ |
 
-### Approval Status
+## Approved for
 
-Approved for: ☐ Pilot (Month 1) ☐ Production (Q3 2026)
+☐ Pilot (Month 1)    ☐ Production (Q3 2026)
 
 ---
 
