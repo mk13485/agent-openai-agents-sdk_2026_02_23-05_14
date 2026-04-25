@@ -14,14 +14,16 @@
 - ✅ **Databricks workspace location:** eu-west-1 (Ireland, EU).
 - ✅ **Data Processing Agreement signed:** Databricks EU DPA + SCCs.
 - ✅ **Sub-processors approved:**
+
   | Service | Location | DPA? | Alternative |
-  |---------|----------|------|-------------|
+  | --- | --- | --- | --- |
   | Databricks | EU (Ireland) | ✅ Signed | N/A |
   | Redis (managed) | EU (Ireland) | ✅ Databricks covers | Self-host in EU |
   | Vector DB (Pinecone) | EU region (Frankfurt) | ⏳ In review | Weaviate/Qdrant self-hosted in EU |
   | GitHub API (PR creation) | US | ✅ SCCs + Standard Contractual Clauses | GitLab (EU) alternative |
 
 **Action Items:**
+
 - [ ] Confirm Pinecone EU region available (sign DPA).
 - [ ] If Pinecone unavailable, provision self-hosted Qdrant in EU.
 - [ ] Document all data flows in system architecture diagram.
@@ -39,6 +41,7 @@
 **What:** User can request all personal data held about them.
 
 **Implementation:**
+
 ```python
 # app_server/gdpr.py
 class GDPRController:
@@ -94,6 +97,7 @@ class GDPRController:
 **What:** User can request deletion of their personal data (exceptions: legal obligation, etc.).
 
 **Implementation:**
+
 ```python
 # app_server/gdpr.py
 @app.post("/api/v1/gdpr/deletion-request")
@@ -156,6 +160,7 @@ async def delete_user_data(user_id: str):
 **What:** User can request their data in portable format (JSON, CSV).
 
 **Implementation:**
+
 ```python
 @app.post("/api/v1/gdpr/portability-request")
 async def request_portability(format: str = "json", user = Depends(get_current_user)):
@@ -198,7 +203,8 @@ async def request_portability(format: str = "json", user = Depends(get_current_u
 **What:** User can opt-out of training their data being used to improve the model.
 
 **Checkbox in UI:**
-```
+
+```text
 Privacy Settings
 ━━━━━━━━━━━━━━━━━━━━━━━
 ☑ Allow training on my code (improves model)
@@ -212,6 +218,7 @@ Privacy Settings
 ```
 
 **Implementation:**
+
 ```python
 class ConsentManager:
     def set_training_consent(self, user_id: str, enabled: bool):
@@ -240,6 +247,7 @@ class ConsentManager:
 ### Privacy Policy & Terms
 
 **Must include:**
+
 - ✅ What data is collected? (completions, telemetry, code snippets)
 - ✅ Why? (model improvement, debugging, safety)
 - ✅ Who has access? (ML team for training, Security for audits)
@@ -263,7 +271,8 @@ class ConsentManager:
 **When:** Training on private repo code requires explicit org-level consent.
 
 **Form:**
-```
+
+```text
 Organization Training Consent
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 By enabling training, you allow the Copilot Coding Agent to use 
@@ -283,6 +292,7 @@ Your data will:
 ```
 
 **Implementation:**
+
 ```python
 class OrganizationConsent:
     def get_consent_status(self, org_id: str) -> bool:
@@ -326,6 +336,7 @@ class OrganizationConsent:
 **Requirement:** AES-256 encryption for all PII / code data.
 
 **Implementation:**
+
 ```python
 # app_server/encryption.py
 from cryptography.fernet import Fernet
@@ -366,6 +377,7 @@ telemetry = {
 **Requirement:** TLS 1.3, perfect forward secrecy.
 
 **Implementation:**
+
 ```yaml
 # app_server/nginx.conf (reverse proxy)
 ssl_protocols TLSv1.3;
@@ -391,6 +403,7 @@ add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" alway
 ### Audit Log Requirements
 
 **Must log:**
+
 - User authentication (login, logout, token refresh).
 - Data access (query for user data, export).
 - Authorization changes (consent toggles, permission grants).
@@ -398,6 +411,7 @@ add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" alway
 - Security events (failed login, redaction triggered, unsafe code detected).
 
 **Example log entry:**
+
 ```json
 {
   "timestamp": "2026-02-23T09:30:00Z",
@@ -426,6 +440,7 @@ add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" alway
 ### Compliance Reports (Automated)
 
 **Monthly GDPR report:**
+
 ```python
 # compliance/gdpr_report.py
 def generate_gdpr_report(month: int, year: int) -> dict:
@@ -478,11 +493,12 @@ def generate_gdpr_report(month: int, year: int) -> dict:
    - [ ] Post-mortem completed.
 
 **Contact info:**
+
 | Role | Name | Email | On-Call? |
-|------|------|-------|---------|
-| Data Protection Officer | [NAME] | dpo@company.com | ✅ 24/7 |
-| Security Lead | [NAME] | security@company.com | ✅ 24/7 |
-| Legal Counsel | [NAME] | legal@company.com | Business hrs |
+| --- | --- | --- | --- |
+| Data Protection Officer | [NAME] | <dpo@company.com> | ✅ 24/7 |
+| Security Lead | [NAME] | <security@company.com> | ✅ 24/7 |
+| Legal Counsel | [NAME] | <legal@company.com> | Business hrs |
 
 - [ ] Incident response playbook drafted.
 - [ ] On-call rotation set up.
@@ -497,6 +513,7 @@ def generate_gdpr_report(month: int, year: int) -> dict:
 ### Sub-Processor Audit
 
 **Databricks (model serving, inference):**
+
 - [ ] DPA signed? ✅ Yes
 - [ ] SOC 2 Type II? ✅ Yes
 - [ ] Data location? EU (Ireland)
@@ -504,11 +521,13 @@ def generate_gdpr_report(month: int, year: int) -> dict:
 - [ ] Audit frequency? Annual external audit
 
 **Vector DB (Pinecone or Qdrant):**
+
 - [ ] EU region available? ⏳ Confirm
 - [ ] DPA signed? ⏳ Pending
 - [ ] Data location? EU (to be confirmed)
 
 **GitHub (PR creation):**
+
 - [ ] Location? US (requires SCCs)
 - [ ] SCCs signed? ⏳ Pending
 - [ ] Data minimization? Only repo name, PR title (no code)
@@ -556,15 +575,18 @@ def approve_new_processor(vendor_name: str, purpose: str, location: str):
 ### Vulnerability Scanning
 
 **Automated SAST (Static Analysis):**
+
 - [ ] Setup GitHub advanced security / SonarQube.
 - [ ] Scan on every PR -> block if critical vulns.
 
 **Dependency scanning:**
+
 - [ ] Setup Dependabot / Snyk.
 - [ ] Auto-patch low-risk updates.
 - [ ] Alert on high-risk vulns.
 
 **Container scanning:**
+
 - [ ] Scan Docker image for vulns → Aqua / Trivy.
 - [ ] Only deploy images with 0 critical vulns.
 
@@ -581,6 +603,7 @@ def approve_new_processor(vendor_name: str, purpose: str, location: str):
 **Schedule:** Annual (first: Month 6+1 = Month 7).
 
 **Scope:**
+
 - App Server API (auth bypass, injection attacks).
 - IDE plugin (supply chain, phishing).
 - Data stores (encryption, access control).
@@ -668,16 +691,17 @@ def approve_new_processor(vendor_name: str, purpose: str, location: str):
 **Compliance Review Board:**
 
 | Role | Name | Date | Sign |
-|------|------|------|------|
+| --- | --- | --- | --- |
 | Data Protection Officer | __________ | _____ | _____ |
 | Legal Counsel | __________ | _____ | _____ |
 | Security Lead | __________ | _____ | _____ |
 | CTO | __________ | _____ | _____ |
 
-**Approved for:  ☐ Pilot (Month 1)    ☐ Production (Q3 2026)**
+## Approved for
+
+☐ Pilot (Month 1)    ☐ Production (Q3 2026)
 
 ---
 
 **Last Updated:** 23 Feb 2026  
 **Next Review:** 30 April 2026 (post-pilot)
-
