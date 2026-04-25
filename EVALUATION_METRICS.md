@@ -1,7 +1,7 @@
 # Evaluation Metrics & QA Specification
 
-**For:** Copilot-Style Coding Agent  
-**Date:** 23 Feb 2026  
+**For:** Copilot-Style Coding Agent
+**Date:** 23 Feb 2026
 **Version:** 1.0 (Ready for Pilot)
 
 ---
@@ -942,7 +942,7 @@ dashboard:
 **Go/No-Go Decision (Month 6):**
 
 | Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
+| --- | --- | --- | --- |
 | Acceptance rate (completions) | ≥70% | ___ | ☐ |
 | Task test pass rate | ≥85% | ___ | ☐ |
 | P95 latency (completions) | <500ms | ___ | ☐ |
@@ -965,7 +965,7 @@ dashboard:
 ### Alert Routing
 
 | Metric | Threshold | Severity | On-Call |
-|--------|-----------|----------|---------|
+| --- | --- | --- | --- |
 | Acceptance rate drops | <60% | High | ML Lead |
 | P95 latency >2000ms | Sustained 1h | Medium | ML Ops |
 | Security flags spike | >10%/day | Critical | Security |
