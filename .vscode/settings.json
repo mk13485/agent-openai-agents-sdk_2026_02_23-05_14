@@ -5,30 +5,5 @@
             "envManager": "ms-python.python:venv",
             "packageManager": "ms-python.python:pip"
         }
-    ],
-    "colab.activityBar": true,
-    "colab.serverMounting": true,
-    "colab.terminal": true,
-    "colab.uploading": true,
-    "chat.experimental.useSkillAdherencePrompt": true,
-    "workbench.editor.autoLockGroups": {
-        "default": true,
-        "workbench.editorinputs.searchEditorInput": true,
-        "copilot-chat-replay": true,
-        "workbench.input.interactive": true,
-        "mainThreadWebview-markdown.preview": true,
-        "luna.editor": true,
-        "hediet.vscode-drawio-text": true,
-        "jsProfileVisualizer.heapsnapshot.table": true,
-        "jsProfileVisualizer.cpuprofile.table": true
-    },
-    "jupyter.allowUnauthorizedRemoteConnection": true,
-    "jupyter.excludeUserSitePackages": true,
-    "jupyter.exportWithOutputEnabled": true,
-    "jupyter.interactiveWindow.textEditor.magicCommandsAsComments": true,
-    "jupyter.interactiveWindow.textEditor.normalizeSelection": true,
-    "jupyter.logKernelOutputSeparately": true,
-    "jupyter.showVariableViewWhenDebugging": true,
-    "jupyter.themeMatplotlibPlots": true,
-    "jupyter.interactiveWindow.notebookRepl": true
+    ]
 }
