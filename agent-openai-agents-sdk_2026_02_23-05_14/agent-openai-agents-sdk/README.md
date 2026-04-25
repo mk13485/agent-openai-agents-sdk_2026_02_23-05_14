@@ -57,6 +57,36 @@ uv run start-server --reload
 uv run start-app
 ```
 
+### Reliability and model fallback
+
+You can configure retries and fallback model behavior:
+
+```bash
+AGENT_MODEL=gpt-4.1-mini
+AGENT_FALLBACK_MODEL=gpt-4.1
+AGENT_MAX_RETRIES=2
+AGENT_RETRY_BASE_SECONDS=1.0
+```
+
+At startup the server logs the active backend/model/fallback and retry settings.
+
+### Health endpoint
+
+The server exposes health metadata at:
+
+- `GET /health`
+
+Response includes current backend, model, fallback model, and retry settings.
+
+### Optional conversation memory backend
+
+The repository now includes an optional memory-store scaffold (`agent_server/memory_store.py`) with:
+
+- in-memory backend (default)
+- Azure Cosmos DB backend (optional)
+
+For Cosmos DB, use high-cardinality partitioning to isolate users/tenants and prevent hotspots (for example `tenantId#userId`).
+
 After the setup is complete, you can start the agent server and the chat app locally with:
 
 ```bash

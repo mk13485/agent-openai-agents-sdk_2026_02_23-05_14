@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: perfect-agent-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: perfect-agent-ui
+  template:
+    metadata:
+      labels:
+        app: perfect-agent-ui
+    spec:
+      containers:
+        - name: ui
+          image: "{{ .Values.uiImage.repository }}:{{ .Values.uiImage.tag }}"
+          imagePullPolicy: "{{ .Values.uiImage.pullPolicy | default \"IfNotPresent\" }}"
+          env:
+            - name: API_BASE_URL
+              value: "http://perfect-agent-api:{{ .Values.service.apiPort }}"
+          ports:
+            - containerPort: 7860

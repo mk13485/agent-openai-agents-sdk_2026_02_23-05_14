@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: perfect-agent-api
+    env_file: .env
+    environment:
+      APP_URL: ${APP_URL}
+      APP_NAME: ${APP_NAME}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+    ports:
+      - "${API_PORT:-8000}:8000"
+
+  ui:
+    image: python:3.11-slim
+    container_name: perfect-agent-ui
+    working_dir: /app
+    volumes:
+      - .:/app
+    env_file: .env
+    environment:
+      API_BASE_URL: "http://api:8000"
+    command: >
+      sh -c "pip install --no-cache-dir -e . gradio httpx &&
+             python ui/perfect_agent_gradio.py"
+    depends_on:
+      - api
+    ports:
+      - "${UI_PORT:-7860}:7860"
