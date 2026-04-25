@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: perfect-agent-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: perfect-agent-api
+  template:
+    metadata:
+      labels:
+        app: perfect-agent-api
+    spec:
+      containers:
+        - name: api
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: "{{ .Values.image.pullPolicy | default \"IfNotPresent\" }}"
+          env:
+            - name: APP_URL
+              value: "{{ .Values.env.APP_URL }}"
+            - name: APP_NAME
+              value: "{{ .Values.env.APP_NAME }}"
+            - name: OPENROUTER_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: perfect-agent-secrets
+                  key: OPENROUTER_API_KEY
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: perfect-agent-secrets
+                  key: OPENAI_API_KEY
+          ports:
+            - containerPort: 8000

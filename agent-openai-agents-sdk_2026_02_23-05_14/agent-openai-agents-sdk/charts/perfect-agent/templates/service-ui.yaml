@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: perfect-agent-ui
+spec:
+  type: {{ .Values.service.type | default "ClusterIP" }}
+  selector:
+    app: perfect-agent-ui
+  ports:
+    - port: {{ .Values.service.uiPort }}
+      targetPort: 7860
+      name: http

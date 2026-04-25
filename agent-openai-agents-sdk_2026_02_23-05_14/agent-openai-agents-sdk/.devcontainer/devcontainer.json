@@ -1,7 +1,7 @@
 {
     "name": "PERFECT-AGENT Devcontainer",
     "image": "mcr.microsoft.com/devcontainers/python:3.11",
-    "postCreateCommand": "pip install -e .",
+    "postCreateCommand": "scripts/demo_up.sh",
     "customizations": {
         "vscode": {
             "extensions": [
